@@ -7,18 +7,28 @@ public class TestDLL : MonoBehaviour
     [DllImport("TestDLL", EntryPoint = "TestSort")]
     public static extern void TestSort(int[] a, int length);
 
-    public int[] arrayOfInts;
+    private int[] arrayOfInts = new int[] { 97, 92, 81, 60, 1, 104, 208, 56, 7, 1005 };
 
     void Start()
     {
-        arrayOfInts = new int[5];
-        arrayOfInts[0] = 10;
-        arrayOfInts[1] = 74;
-        arrayOfInts[2] = 1;
-        arrayOfInts[3] = 245;
-        arrayOfInts[4] = 7;
-        Debug.Log(arrayOfInts[0]);
+        Debug.Log(ArrayToString(arrayOfInts, ";"));
         TestSort(arrayOfInts, arrayOfInts.Length);
-        Debug.Log(arrayOfInts[0]);
+        Debug.Log(ArrayToString(arrayOfInts, ";"));
+    }
+
+    private string ArrayToString(int[] array, string delimiter)
+    {
+        string result = "";
+
+        for (int i = 0; i < array.Length; i++)
+        {
+            result += array[i];
+            if (i != array.Length - 1)
+            {
+                result += ";";
+            }
+        }
+
+        return result;
     }
 }
