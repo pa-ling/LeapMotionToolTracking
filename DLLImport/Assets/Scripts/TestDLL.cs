@@ -7,16 +7,21 @@ public class TestDLL : MonoBehaviour
     [DllImport("TestDLL", EntryPoint = "TestSort")]
     public static extern void TestSort(int[] a, int length);
 
+    [DllImport("TestDLL", EntryPoint = "ShowImage")]
+    public static extern int ShowImage();
+
     private int[] arrayOfInts = new int[] { 97, 92, 81, 60, 1, 104, 208, 56, 7, 1005 };
 
     void Start()
     {
-        Debug.Log(ArrayToString(arrayOfInts, ";"));
+        Debug.Log(IntArrayToString(arrayOfInts, ";"));
         TestSort(arrayOfInts, arrayOfInts.Length);
-        Debug.Log(ArrayToString(arrayOfInts, ";"));
+        Debug.Log(IntArrayToString(arrayOfInts, ";"));
+
+        Debug.Log(ShowImage());
     }
 
-    private string ArrayToString(int[] array, string delimiter)
+    private string IntArrayToString(int[] array, string delimiter)
     {
         string result = "";
 
@@ -25,10 +30,11 @@ public class TestDLL : MonoBehaviour
             result += array[i];
             if (i != array.Length - 1)
             {
-                result += ";";
+                result += delimiter;
             }
         }
 
         return result;
     }
+
 }

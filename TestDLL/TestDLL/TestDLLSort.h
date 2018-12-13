@@ -1,5 +1,4 @@
-#define TESTDLLSORT_API __declspec(dllexport) 
-
 extern "C" {
-	TESTDLLSORT_API void TestSort(int a[], int length);
+	__declspec(dllexport) void TestSort(int a[], int length);
+	__declspec(dllexport) int ShowImage();
 }
