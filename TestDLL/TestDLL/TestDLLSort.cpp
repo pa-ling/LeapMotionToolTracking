@@ -34,6 +34,7 @@ extern "C" {
 
 		// Process frame here …
 		cvtColor(frame, frame, cv::COLOR_BGR2GRAY);
+		memcpy(raw, frame.data, frame.total() * frame.elemSize());
 		imshow("frame", frame);
 	}
 }

@@ -15,7 +15,8 @@ public class TestDLL : MonoBehaviour
 
     private int[] arrayOfInts = new int[] { 97, 92, 81, 60, 1, 104, 208, 56, 7, 1005 };
 
-    public WebCamTexture webcam;
+    private WebCamTexture webcam;
+    private Texture2D processedWebcam;
 
     void Start()
     {
@@ -26,8 +27,11 @@ public class TestDLL : MonoBehaviour
         //Debug.Log(ShowImage());
 
         webcam = new WebCamTexture();
-        GameObject.Find("DisplayCamera").GetComponentInChildren<MeshRenderer>().material.mainTexture = webcam;
         webcam.Play();
+
+        Debug.Log("width: " + webcam.width + ", height: " + webcam.height);
+        processedWebcam = new Texture2D(webcam.width, webcam.height);
+        GameObject.Find("DisplayCamera").GetComponentInChildren<MeshRenderer>().material.mainTexture = processedWebcam;
     }
 
     void Update()
@@ -35,11 +39,10 @@ public class TestDLL : MonoBehaviour
         if (webcam.isPlaying)
         {
             Color32[] rawImg = webcam.GetPixels32();
-            System.Array.Reverse(rawImg);
             processImage(rawImg, webcam.width, webcam.height);
-            Debug.Log("OK");
+            processedWebcam.SetPixels32(rawImg);
+            processedWebcam.Apply();
         }
-        Debug.Log("NOK");
     }
 
     private string IntArrayToString(int[] array, string delimiter)
