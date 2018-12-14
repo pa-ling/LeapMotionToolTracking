@@ -33,9 +33,12 @@ extern "C" {
 		Mat frame(height, width, CV_8UC4, raw);
 
 		// Process frame here …
-		cvtColor(frame, frame, COLOR_BGR2GRAY);
-		//cvtColor(frame, frame, COLOR_BGR2RGB);
-		memcpy(processed, frame.data, width * height);
+		//cvtColor(frame, frame, COLOR_BGR2GRAY);
+		cvtColor(frame, frame, COLOR_BGR2BGRA);
+		memcpy(processed, frame.data, frame.total() * frame.elemSize());
+		//this shows the picture but with different colors
+		//this because unity and opencv are using different ways to store colors
+		//i think one uses BGRA and the other RGBA
 		imshow("frame", frame);
 	}
 }
