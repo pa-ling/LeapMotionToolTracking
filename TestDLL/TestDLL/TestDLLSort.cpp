@@ -3,6 +3,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/opencv.hpp>
 #include <iostream>
 
 using namespace cv;
@@ -13,7 +14,6 @@ extern "C" {
 	void __declspec(dllexport) TestSort(int a[], int length)
 	{
 		sort(a, a + length);
-		a[0] = a[0] + 1;
 	}
 
 	int __declspec(dllexport) ShowImage()
@@ -27,5 +27,13 @@ extern "C" {
 		waitKey(0); // Wait for a keystroke in the window
 
 		return 23;
+	}
+
+	void __declspec(dllexport) processImage(unsigned char* raw, int width, int height) {
+		Mat frame(height, width, CV_8UC4, raw);
+
+		// Process frame here …
+		cvtColor(frame, frame, cv::COLOR_BGR2GRAY);
+		imshow("frame", frame);
 	}
 }

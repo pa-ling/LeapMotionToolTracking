@@ -3,14 +3,19 @@ using System.Runtime.InteropServices;
 
 public class TestDLL : MonoBehaviour
 {
-    // The imported function
+    // The imported functions
     [DllImport("TestDLL", EntryPoint = "TestSort")]
     public static extern void TestSort(int[] a, int length);
 
     [DllImport("TestDLL", EntryPoint = "ShowImage")]
     public static extern int ShowImage();
 
+    [DllImport("TestDLL", EntryPoint = "processImage")]
+    public static extern void processImage(Color32[] raw, int width, int height);
+
     private int[] arrayOfInts = new int[] { 97, 92, 81, 60, 1, 104, 208, 56, 7, 1005 };
+
+    public WebCamTexture webcam;
 
     void Start()
     {
@@ -18,7 +23,23 @@ public class TestDLL : MonoBehaviour
         TestSort(arrayOfInts, arrayOfInts.Length);
         Debug.Log(IntArrayToString(arrayOfInts, ";"));
 
-        Debug.Log(ShowImage());
+        //Debug.Log(ShowImage());
+
+        webcam = new WebCamTexture();
+        GameObject.Find("DisplayCamera").GetComponentInChildren<MeshRenderer>().material.mainTexture = webcam;
+        webcam.Play();
+    }
+
+    void Update()
+    {
+        if (webcam.isPlaying)
+        {
+            Color32[] rawImg = webcam.GetPixels32();
+            System.Array.Reverse(rawImg);
+            processImage(rawImg, webcam.width, webcam.height);
+            Debug.Log("OK");
+        }
+        Debug.Log("NOK");
     }
 
     private string IntArrayToString(int[] array, string delimiter)
