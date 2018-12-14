@@ -11,7 +11,7 @@ public class TestDLL : MonoBehaviour
     public static extern int ShowImage();
 
     [DllImport("TestDLL", EntryPoint = "processImage")]
-    public static extern void processImage(Color32[] raw, int width, int height);
+    public static extern void processImage(Color32[] raw, Color32[] processed, int width, int height);
 
     private int[] arrayOfInts = new int[] { 97, 92, 81, 60, 1, 104, 208, 56, 7, 1005 };
 
@@ -39,8 +39,9 @@ public class TestDLL : MonoBehaviour
         if (webcam.isPlaying)
         {
             Color32[] rawImg = webcam.GetPixels32();
-            processImage(rawImg, webcam.width, webcam.height);
-            processedWebcam.SetPixels32(rawImg);
+            Color32[] processedImg = new Color32[rawImg.Length];
+            processImage(rawImg, processedImg, webcam.width, webcam.height);
+            processedWebcam.SetPixels32(processedImg);
             processedWebcam.Apply();
         }
     }

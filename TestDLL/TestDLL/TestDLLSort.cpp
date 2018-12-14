@@ -29,12 +29,13 @@ extern "C" {
 		return 23;
 	}
 
-	void __declspec(dllexport) processImage(unsigned char* raw, int width, int height) {
+	void __declspec(dllexport) processImage(unsigned char* raw, unsigned char* processed, int width, int height) {
 		Mat frame(height, width, CV_8UC4, raw);
 
 		// Process frame here …
-		cvtColor(frame, frame, cv::COLOR_BGR2GRAY);
-		memcpy(raw, frame.data, frame.total() * frame.elemSize());
+		cvtColor(frame, frame, COLOR_BGR2GRAY);
+		//cvtColor(frame, frame, COLOR_BGR2RGB);
+		memcpy(processed, frame.data, width * height);
 		imshow("frame", frame);
 	}
 }
