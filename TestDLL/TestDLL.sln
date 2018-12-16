@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestDLL", "TestDLL\TestDLL.vcxproj", "{08CAF3C5-9CDC-44BD-82FC-D6165543D24F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{C85A1F25-07C2-4929-B8A3-C136B80D286F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Execute", "Execute\Execute.vcxproj", "{C85A1F25-07C2-4929-B8A3-C136B80D286F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
