@@ -1,5 +1,5 @@
-#ifndef CHEADER_H_INCLUDED
-#define CHEADER_H_INCLUDED
+#ifndef IMAGE_SAMPLE_H
+#define IMAGE_SAMPLE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,4 +11,4 @@ extern "C" {
 }
 #endif
 
-#endif /* CHEADER_H_INCLUDED */
+#endif /* IMAGE_SAMPLE_H */

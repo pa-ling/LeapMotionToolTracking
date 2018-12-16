@@ -5,8 +5,8 @@
 * https://developer.leapmotion.com/sdk_agreement, or another agreement         *
 * between Leap Motion and you, your company or other organization.             *
 \******************************************************************************/
-#ifndef ExampleConnection_h
-#define ExampleConnection_h
+#ifndef EXAMPLE_CONNECTION_H
+#define EXAMPLE_CONNECTION_H
 
 #include "LeapC.h"
 
@@ -55,4 +55,4 @@ struct Callbacks{
 };
 extern struct Callbacks ConnectionCallbacks;
 extern void millisleep(int milliseconds);
-#endif /* ExampleConnection_h */
+#endif /* EXAMPLE_CONNECTION_H */
