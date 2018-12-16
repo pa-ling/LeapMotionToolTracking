@@ -21,6 +21,9 @@
     <ClInclude Include="ExampleConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ImageSample.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestDLLSort.cpp">

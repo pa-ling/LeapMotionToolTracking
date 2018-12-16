@@ -1,10 +1,13 @@
+extern "C" {
 #include "TestDLLSort.h"
+}
 #include <algorithm>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include "ImageSample.h"
 
 using namespace cv;
 using namespace std;
@@ -40,5 +43,9 @@ extern "C" {
 		//this because unity and opencv are using different ways to store colors
 		//i think one uses BGRA and the other RGBA
 		imshow("frame", frame);
+	}
+
+	void __declspec(dllexport) getLeapImages() {
+		getImage();
 	}
 }

@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ExampleConnection.h" />
+    <ClInclude Include="ImageSample.h" />
     <ClInclude Include="TestDLLSort.h" />
   </ItemGroup>
   <ItemGroup>

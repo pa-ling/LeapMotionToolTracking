@@ -8,6 +8,7 @@
 
 #undef __cplusplus
 
+#include "ImageSample.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -46,7 +47,7 @@ static void OnImage(const LEAP_IMAGE_EVENT *imageEvent){
            (long long int)imageEvent->image[0].properties.height*2);
 }
 
-static int getImage(int argc, char** argv) {
+void getImage() {
   //Set callback function pointers
   ConnectionCallbacks.on_connection          = &OnConnect;
   ConnectionCallbacks.on_device_found        = &OnDevice;
@@ -58,6 +59,5 @@ static int getImage(int argc, char** argv) {
 
   printf("Press Enter to exit program.\n");
   getchar();
-  return 0;
 }
 //End-of-Sample.c
