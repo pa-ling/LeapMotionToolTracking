@@ -2,10 +2,10 @@
 #define TESTDLLSORT_H
 
 extern "C" {
-	__declspec(dllexport) void TestSort(int a[], int length);
-	__declspec(dllexport) int ShowImage();
-	__declspec(dllexport) void processImage(unsigned char* raw, unsigned char* processed, int width, int height);
-	__declspec(dllexport) void getLeapImages();
+	__declspec(dllexport) void SortIntArray(int a[], int length);
+	__declspec(dllexport) void ShowImage(char path[]);
+	__declspec(dllexport) void ProcessImageData(unsigned char* in, unsigned char* out, int width, int height);
+	__declspec(dllexport) void GetLeapImages();
 }
 
 #endif
