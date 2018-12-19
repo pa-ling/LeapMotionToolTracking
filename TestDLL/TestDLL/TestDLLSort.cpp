@@ -1,13 +1,7 @@
 extern "C" {
 #include "TestDLLSort.h"
 }
-#include <algorithm>
-#include <opencv2/core.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
-#include <iostream>
-#include "ImageSample.h"
 
 using namespace cv;
 using namespace std;

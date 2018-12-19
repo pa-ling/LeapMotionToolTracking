@@ -60,4 +60,3 @@ void getImage() {
   printf("Press Enter to exit program.\n");
   getchar();
 }
-//End-of-Sample.c
