@@ -15,48 +15,45 @@
 #include "LeapC.h"
 #include "ExampleConnection.h"
 
-/** Callback for when the connection opens. */
-static void OnConnect(){
-  printf("Connected.\n");
-}
-
-/** Callback for when a device is found. */
-static void OnDevice(const LEAP_DEVICE_INFO *props){
-  printf("Found device %s.\n", props->serial);
-}
-
-/** Callback for when a frame of tracking data is available. */
-static void OnFrame(const LEAP_TRACKING_EVENT *frame){
-  printf("Frame %lli with %i hands.\n", (long long int)frame->info.frame_id, frame->nHands);
-  for(uint32_t h = 0; h < frame->nHands; h++){
-    LEAP_HAND* hand = &frame->pHands[h];
-    printf("    Hand id %i is a %s hand with position (%f, %f, %f).\n",
-                hand->id,
-                (hand->type == eLeapHandType_Left ? "left" : "right"),
-                hand->palm.position.x,
-                hand->palm.position.y,
-                hand->palm.position.z);
-  }
-}
+void* image_buffer = NULL;
+uint64_t image_size = 0;
+uint32_t image_width = 0;
+uint32_t image_height = 0;
 
 /** Callback for when an image is available. */
 static void OnImage(const LEAP_IMAGE_EVENT *imageEvent){
-    printf("Received image set for frame %lli with size %lli.\n",
-           (long long int)imageEvent->info.frame_id,
-           (long long int)imageEvent->image[0].properties.width*
-           (long long int)imageEvent->image[0].properties.height*2);
+	const LEAP_IMAGE_PROPERTIES* properties = &imageEvent->image[0].properties;
+	if (properties->bpp != 1) {
+		return;
+	}
+
+	if (properties->width*properties->height != image_size) {
+		void* prev_image_buffer = image_buffer;
+		image_width = properties->width;
+		image_height = properties->height;
+		image_size = image_width * image_height;
+		image_buffer = malloc(2 * image_size);
+		if (prev_image_buffer) {
+			free(prev_image_buffer);
+		}
+	}
+
+	memcpy(image_buffer, (char*)imageEvent->image[0].data + imageEvent->image[0].offset, image_size);
+	memcpy((char*)image_buffer + image_size, (char*)imageEvent->image[1].data + imageEvent->image[1].offset, image_size);
 }
 
-void getImage() {
-  //Set callback function pointers
-  ConnectionCallbacks.on_connection          = &OnConnect;
-  ConnectionCallbacks.on_device_found        = &OnDevice;
-  ConnectionCallbacks.on_frame               = &OnFrame;
-  ConnectionCallbacks.on_image               = &OnImage;
+void getImage(void* image, int* width, int* height) {
+  ConnectionCallbacks.on_image = &OnImage;
 
   LEAP_CONNECTION *connection = OpenConnection();
   LeapSetPolicyFlags(*connection, eLeapPolicyFlag_Images, 0);
 
-  printf("Press Enter to exit program.\n");
-  getchar();
+  while (!IsConnected) {
+	  millisleep(250);
+  }
+  printf("Connected.\n");
+
+  *width = image_width;
+  *height = image_height;
+  memcpy(image, image_buffer, image_width * image_height);
 }

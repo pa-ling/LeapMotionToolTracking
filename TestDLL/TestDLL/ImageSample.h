@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-	void getImage();
+	void getImage(void* image, int* width, int* height);
 
 #ifdef __cplusplus
 }

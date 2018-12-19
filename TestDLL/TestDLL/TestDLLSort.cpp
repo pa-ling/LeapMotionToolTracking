@@ -37,6 +37,14 @@ extern "C" {
 	}
 
 	void __declspec(dllexport) GetLeapImages() {
-		getImage();
+		char* image = new char[1000*1000];
+		int width, height;
+		for (int i = 0; i < 100; i++) {
+			getImage(image, &width, &height);
+			printf("width: %d, height: %d.\n", width, height);
+			Mat frame(height, width, CV_8UC1, image);
+			imshow("Leap", frame);
+			waitKey(100);
+		}
 	}
 }
