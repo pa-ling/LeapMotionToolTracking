@@ -24,6 +24,9 @@
     <ClInclude Include="ImageSample.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="easylogging++.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestDLLSort.cpp">
@@ -35,5 +38,13 @@
     <ClCompile Include="ImageSample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="easylogging++.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="logging.conf">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

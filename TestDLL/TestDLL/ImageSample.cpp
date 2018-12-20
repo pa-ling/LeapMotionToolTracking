@@ -52,12 +52,12 @@ static void OnImage(const LEAP_IMAGE_EVENT *imageEvent){
 void connect() {
 	ConnectionCallbacks.on_image = &OnImage;
 
-	LEAP_CONNECTION *connection = OpenConnection();
+	/*LEAP_CONNECTION *connection = OpenConnection();
 	LeapSetPolicyFlags(*connection, eLeapPolicyFlag_Images, 0);
 
 	while (!IsConnected) {
 		millisleep(250);
-	}
+	}*/
 }
 
 void getDimensions(int* width, int* height) {

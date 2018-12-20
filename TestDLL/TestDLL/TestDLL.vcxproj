@@ -152,11 +152,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="easylogging++.h" />
     <ClInclude Include="ExampleConnection.h" />
     <ClInclude Include="ImageSample.h" />
     <ClInclude Include="TestDLLSort.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="easylogging++.cpp" />
     <ClCompile Include="ExampleConnection.cpp">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
     </ClCompile>
@@ -164,6 +166,9 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="TestDLLSort.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="logging.conf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

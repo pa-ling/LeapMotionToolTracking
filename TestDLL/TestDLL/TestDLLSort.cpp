@@ -2,6 +2,9 @@ extern "C" {
 #include "TestDLLSort.h"
 }
 #include <opencv2/opencv.hpp>
+#include "easylogging++.h"
+
+INITIALIZE_EASYLOGGINGPP
 
 using namespace cv;
 using namespace std;
@@ -15,12 +18,21 @@ extern "C" {
 	}
 
 	/* This function tests the availability of opencv */
-	int __declspec(dllexport) ShowImage(char path[])
+	void __declspec(dllexport) ShowImage(char* string)
 	{
-		Mat image = imread(path, IMREAD_COLOR);
-		return 0;
+		el::Configurations conf("D:\\Development\\Git\\LeapMotionToolTracking\\TestDLL\\TestDLL\\logging.conf");
+		el::Loggers::reconfigureAllLoggers(conf);
+
+		int length = strlen(string) + 1;
+		char* res = (char*)malloc(length);
+		strcpy_s(res, length, string);
+
+		LOG(INFO) << "ShowImage > path: " << res;
+		free(res);
+		Mat image = imread(string, IMREAD_COLOR);
 		imshow("Test Image", image);
 		waitKey(1000); //Wait for 1 second before closing the window
+		destroyWindow("Test Image");
 	}
 
 	/* This function gets image data and processes it*/

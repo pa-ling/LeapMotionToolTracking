@@ -8,7 +8,7 @@ public class TestDLL : MonoBehaviour
     public static extern void TestSort(int[] a, int length);
 
     [DllImport("TestDLL", EntryPoint = "ShowImage")]
-    public static extern int ShowImage(char[] path);
+    public static extern void ShowImage(string path);
 
     [DllImport("TestDLL", EntryPoint = "ProcessImageData")]
     public static extern void ProcessImageData(Color32[] raw, Color32[] processed, int width, int height);
@@ -25,15 +25,14 @@ public class TestDLL : MonoBehaviour
     void Start()
     {
         //#1
-        int[] arrayOfInts = new int[] { 97, 92, 81, 60, 1, 104, 208, 56, 7, 1005 };
+        /*int[] arrayOfInts = new int[] { 97, 92, 81, 60, 1, 104, 208, 56, 7, 1005 };
         Debug.Log(IntArrayToString(arrayOfInts, ";"));
         TestSort(arrayOfInts, arrayOfInts.Length);
-        Debug.Log(IntArrayToString(arrayOfInts, ";"));
+        Debug.Log(IntArrayToString(arrayOfInts, ";"));*/
 
         //#2
-        /*char[] path = "D:\\Development\\Git\\LeapMotionToolTracking\\TestDLL\\Test\\test_picture.png".ToCharArray();
-        char[] path = new char[] { 'D', ':', '\\', 'p', '.', 'p', 'n', 'g', '\0' };
-        Debug.Log(ShowImage(path));*/
+        ShowImage("D:\\Development\\Git\\LeapMotionToolTracking\\TestDLL\\Test\\test_picture.png");
+        Debug.Log("Done");
 
         //#3
         /*webcam = new WebCamTexture();
@@ -43,9 +42,9 @@ public class TestDLL : MonoBehaviour
         GameObject.Find("DisplayCamera").GetComponentInChildren<MeshRenderer>().material.mainTexture = processedWebcam;*/
 
         //#4
-        int[] dim = new int[2];
+        /*int[] dim = new int[2];
         GetLeapDimensions(dim);
-        Debug.Log("width: " + dim[0] + ", height: " + dim[1]);
+        Debug.Log("width: " + dim[0] + ", height: " + dim[1]);*/
 
         //#5
         /*processedWebcam = new Texture2D(640, 240);
