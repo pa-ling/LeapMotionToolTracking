@@ -15,9 +15,10 @@ extern "C" {
 	}
 
 	/* This function tests the availability of opencv */
-	void __declspec(dllexport) ShowImage(char path[])
+	int __declspec(dllexport) ShowImage(char path[])
 	{
 		Mat image = imread(path, IMREAD_COLOR);
+		return 0;
 		imshow("Test Image", image);
 		waitKey(1000); //Wait for 1 second before closing the window
 	}
@@ -36,20 +37,19 @@ extern "C" {
 		imshow("frame", frame);
 	}
 
-	void __declspec(dllexport) GetLeapImages() {
-		int width, height, index = 0;
+	void __declspec(dllexport) GetLeapDimensions(int dim[]) {
+		int width, height;
 		getDimensions(&width, &height);
-		char* image0 = new char[width * height];
-		char* image1 = new char[width * height];
-		
-		for (int i = 0; i < 1000; i++) {
-			getImage(image0, 0);
-			getImage(image1, 1);
-			Mat frame0(height, width, CV_8UC1, image0);
-			Mat frame1(height, width, CV_8UC1, image1);
-			imshow("Leap1", frame0);
-			imshow("Leap2", frame1);
-			waitKey(100);
-		}
+		dim[0] = width;
+		dim[1] = height;
+	}
+
+	void __declspec(dllexport) GetLeapImage(unsigned char* out, int index) {
+		int width, height;
+		getDimensions(&width, &height);
+		unsigned char* image = new unsigned char[width * height];
+		getImage(image, index);
+		Mat frame(height, width, CV_8UC1, image);
+		memcpy(out, frame.data, frame.total() * frame.elemSize());
 	}
 }
