@@ -49,23 +49,29 @@ static void OnImage(const LEAP_IMAGE_EVENT *imageEvent){
 	memcpy(image1, (char*)imageEvent->image[1].data + imageEvent->image[1].offset, image_size);
 }
 
-void getImage(void* image, int* width, int* height, int image_index) {
-  ConnectionCallbacks.on_image = &OnImage;
+void connect() {
+	ConnectionCallbacks.on_image = &OnImage;
 
-  LEAP_CONNECTION *connection = OpenConnection();
-  LeapSetPolicyFlags(*connection, eLeapPolicyFlag_Images, 0);
+	LEAP_CONNECTION *connection = OpenConnection();
+	LeapSetPolicyFlags(*connection, eLeapPolicyFlag_Images, 0);
 
-  while (!IsConnected) {
-	  millisleep(250);
-  }
-  printf("Connected.\n");
+	while (!IsConnected) {
+		millisleep(250);
+	}
+}
 
-  *width = image_width;
-  *height = image_height;
-  if (0 == image_index) {
-	  memcpy(image, image0, image_size);
-  }
-  else if (1 == image_index) {
-	  memcpy(image, image1, image_size);
-  }
+void getDimensions(int* width, int* height) {
+	connect();
+	*width = image_width;
+	*height = image_height;
+}
+
+void getImage(void* image, int image_index) {
+	connect();
+	if (0 == image_index) {
+		 memcpy(image, image0, image_size);
+	}
+	 else if (1 == image_index) {
+		memcpy(image, image1, image_size);
+	}
 }
