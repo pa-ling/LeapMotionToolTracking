@@ -15,7 +15,8 @@
 #include "LeapC.h"
 #include "ExampleConnection.h"
 
-void* image_buffer = NULL;
+void* image0 = NULL;
+void* image1 = NULL;
 uint64_t image_size = 0;
 uint32_t image_width = 0;
 uint32_t image_height = 0;
@@ -28,21 +29,27 @@ static void OnImage(const LEAP_IMAGE_EVENT *imageEvent){
 	}
 
 	if (properties->width*properties->height != image_size) {
-		void* prev_image_buffer = image_buffer;
+		void* prev_image0 = image0;
 		image_width = properties->width;
 		image_height = properties->height;
 		image_size = image_width * image_height;
-		image_buffer = malloc(2 * image_size);
-		if (prev_image_buffer) {
-			free(prev_image_buffer);
+		image0 = malloc(2 * image_size);
+		if (prev_image0) {
+			free(prev_image0);
+		}
+
+		void* prev_image1 = image1;
+		image1 = malloc(2 * image_size);
+		if (prev_image1) {
+			free(prev_image1);
 		}
 	}
 
-	memcpy(image_buffer, (char*)imageEvent->image[0].data + imageEvent->image[0].offset, image_size);
-	memcpy((char*)image_buffer + image_size, (char*)imageEvent->image[1].data + imageEvent->image[1].offset, image_size);
+	memcpy(image0, (char*)imageEvent->image[0].data + imageEvent->image[0].offset, image_size);
+	memcpy(image1, (char*)imageEvent->image[1].data + imageEvent->image[1].offset, image_size);
 }
 
-void getImage(void* image, int* width, int* height) {
+void getImage(void* image, int* width, int* height, int image_index) {
   ConnectionCallbacks.on_image = &OnImage;
 
   LEAP_CONNECTION *connection = OpenConnection();
@@ -55,5 +62,10 @@ void getImage(void* image, int* width, int* height) {
 
   *width = image_width;
   *height = image_height;
-  memcpy(image, image_buffer, image_width * image_height);
+  if (0 == image_index) {
+	  memcpy(image, image0, image_size);
+  }
+  else if (1 == image_index) {
+	  memcpy(image, image1, image_size);
+  }
 }
