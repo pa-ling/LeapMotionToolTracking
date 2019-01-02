@@ -18,18 +18,17 @@ extern "C" {
 	}
 
 	/* This function tests the availability of opencv */
-	void __declspec(dllexport) ShowImage(char* string)
+	void __declspec(dllexport) ShowImage(char* path)
 	{
-		el::Configurations conf("D:\\Development\\Git\\LeapMotionToolTracking\\TestDLL\\TestDLL\\logging.conf");
-		el::Loggers::reconfigureAllLoggers(conf);
+		configureLogging();
 
-		int length = strlen(string) + 1;
+		int length = strlen(path) + 1;
 		char* res = (char*)malloc(length);
-		strcpy_s(res, length, string);
+		strcpy_s(res, length, path);
 
 		LOG(INFO) << "ShowImage > path: " << res;
 		free(res);
-		Mat image = imread(string, IMREAD_COLOR);
+		Mat image = imread(path, IMREAD_COLOR);
 		imshow("Test Image", image);
 		waitKey(1000); //Wait for 1 second before closing the window
 		destroyWindow("Test Image");
@@ -50,6 +49,8 @@ extern "C" {
 	}
 
 	void __declspec(dllexport) GetLeapDimensions(int dim[]) {
+		configureLogging();
+		LOG(INFO) << "GetLeapDimensions";
 		int width, height;
 		getDimensions(&width, &height);
 		dim[0] = width;
@@ -63,5 +64,10 @@ extern "C" {
 		getImage(image, index);
 		Mat frame(height, width, CV_8UC1, image);
 		memcpy(out, frame.data, frame.total() * frame.elemSize());
+	}
+
+	void configureLogging() {
+		el::Configurations conf("D:\\Development\\Git\\LeapMotionToolTracking\\TestDLL\\TestDLL\\logging.conf");
+		el::Loggers::reconfigureAllLoggers(conf);
 	}
 }

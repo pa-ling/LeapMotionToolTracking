@@ -31,8 +31,8 @@ public class TestDLL : MonoBehaviour
         Debug.Log(IntArrayToString(arrayOfInts, ";"));*/
 
         //#2
-        ShowImage("D:\\Development\\Git\\LeapMotionToolTracking\\TestDLL\\Test\\test_picture.png");
-        Debug.Log("Done");
+        /*ShowImage("D:\\Development\\Git\\LeapMotionToolTracking\\TestDLL\\Test\\test_picture.png");
+        Debug.Log("Done");*/
 
         //#3
         /*webcam = new WebCamTexture();
@@ -42,9 +42,9 @@ public class TestDLL : MonoBehaviour
         GameObject.Find("DisplayCamera").GetComponentInChildren<MeshRenderer>().material.mainTexture = processedWebcam;*/
 
         //#4
-        /*int[] dim = new int[2];
+        int[] dim = new int[2];
         GetLeapDimensions(dim);
-        Debug.Log("width: " + dim[0] + ", height: " + dim[1]);*/
+        Debug.Log("width: " + dim[0] + ", height: " + dim[1]);
 
         //#5
         /*processedWebcam = new Texture2D(640, 240);
