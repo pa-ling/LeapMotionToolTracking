@@ -35,10 +35,17 @@ extern "C" {
 	}
 
 	/* This function gets image data and processes it*/
-	void __declspec(dllexport) ProcessImageData(unsigned char* in, unsigned char* out, int width, int height) {
-		Mat frame(height, width, CV_8UC1, in);
-		memcpy(out, frame.data, frame.total() * frame.elemSize());
-		imshow("frame", frame);
+	void __declspec(dllexport) ProcessImageData(unsigned char* raw, unsigned char* processed, int width, int height) {
+		unsigned char* image0 = new unsigned char[width*height];
+		unsigned char* image1 = new unsigned char[width*height];
+		memcpy(image0, raw, width*height);
+		memcpy(image1, raw + width*height, width*height);
+
+		Mat img1(height, width, CV_8UC1, image0);
+		Mat img2(height, width, CV_8UC1, image1);
+		//memcpy(out, frame.data, frame.total() * frame.elemSize());
+		imshow("Image 1", img1);
+		imshow("Image 2", img2);
 	}
 
 	/*void __declspec(dllexport) GetLeapDimensions(int dim[]) {

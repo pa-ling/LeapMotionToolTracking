@@ -42,3 +42,6 @@ Assets/StreamingAssets/crashlytics-build.properties
 
 #Plugins
 Assets/Plugins/*
+
+#Logs
+*.log
