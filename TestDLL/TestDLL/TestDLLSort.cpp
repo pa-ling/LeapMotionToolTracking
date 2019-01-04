@@ -37,14 +37,7 @@ extern "C" {
 	/* This function gets image data and processes it*/
 	void __declspec(dllexport) ProcessImageData(unsigned char* in, unsigned char* out, int width, int height) {
 		Mat frame(height, width, CV_8UC1, in);
-
-		// Process frame here …
-		//cvtColor(frame, frame, COLOR_BGR2GRAY);
-		//cvtColor(frame, frame, COLOR_BGR2BGRA);
-		//memcpy(out, frame.data, frame.total() * frame.elemSize());
-		//this shows the picture but with different colors
-		//this because unity and opencv are using different ways to store colors
-		//i think one uses BGRA and the other RGBA
+		memcpy(out, frame.data, frame.total() * frame.elemSize());
 		imshow("frame", frame);
 	}
 
