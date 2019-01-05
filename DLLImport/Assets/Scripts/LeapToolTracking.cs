@@ -10,6 +10,7 @@ public class LeapToolTracking : LeapImageRetriever {
 
     private void Start()
     {
+        Debug.Log("LeapToolTracking initalized.");
         processedWebcam0 = new Texture2D(640, 240);
         GameObject.Find("DisplayCamera0").GetComponentInChildren<MeshRenderer>().material.mainTexture = processedWebcam0;
         processedWebcam1 = new Texture2D(640, 240);
@@ -24,8 +25,6 @@ public class LeapToolTracking : LeapImageRetriever {
         if (_currentImage != null)
         {
             byte[] rawImg0 = _currentImage.Data(Leap.Image.CameraType.LEFT);
-            byte[] rawImg1 = _currentImage.Data(Leap.Image.CameraType.RIGHT);
-
             byte[] processedImg = new byte[rawImg0.Length];
             ProcessImageData(rawImg0, processedImg, _currentImage.Width, _currentImage.Height);
             //Debug.Log("Width: " + _currentImage.Width + ", Height: " + _currentImage.Height);
