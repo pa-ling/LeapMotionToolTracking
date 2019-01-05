@@ -4,9 +4,8 @@
 extern "C" {
 	__declspec(dllexport) void SortIntArray(int a[], int length);
 	__declspec(dllexport) void ShowImage(char* path);
-	__declspec(dllexport) void ProcessImageData(unsigned char* raw, unsigned char* processed, int width, int height);
-	//__declspec(dllexport) void GetLeapDimensions(int dim[]);
-	//__declspec(dllexport) void GetLeapImage(unsigned char* out, int index);
+	__declspec(dllexport) void GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size);
+	__declspec(dllexport) void GetDepthMap(unsigned char* img1, unsigned char* img2, unsigned char* disp, int width, int height);
 }
 void configureLogging();
 

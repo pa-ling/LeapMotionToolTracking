@@ -34,39 +34,36 @@ extern "C" {
 		destroyWindow("Test Image");
 	}
 
-	/* This function gets image data and processes it*/
-	void __declspec(dllexport) ProcessImageData(unsigned char* raw, unsigned char* processed, int width, int height) {
-		unsigned char* image0 = new unsigned char[width*height];
-		unsigned char* image1 = new unsigned char[width*height];
-		memcpy(image0, raw, width*height);
-		memcpy(image1, raw + width*height, width*height);
-
-		Mat img1(height, width, CV_8UC1, image0);
-		Mat img2(height, width, CV_8UC1, image1);
-		//memcpy(out, frame.data, frame.total() * frame.elemSize());
-		imshow("Image 1", img1);
-		imshow("Image 2", img2);
+	void __declspec(dllexport) GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size)
+	{
+		memcpy(img0, raw, size);
+		memcpy(img1, raw + size, size);
 	}
 
-	/*void __declspec(dllexport) GetLeapDimensions(int dim[]) {
-		configureLogging();
-		LOG(INFO) << "GetLeapDimensions";
-		int width, height;
-		getDimensions(&width, &height);
-		dim[0] = width;
-		dim[1] = height;
-	}*/
+	/* This function gets image data and processes it*/
+	void __declspec(dllexport) GetDepthMap(unsigned char* img0, unsigned char* img1, unsigned char* disp, int width, int height)
+	{
+		unsigned char* raw0 = new unsigned char[width*height];
+		unsigned char* raw1 = new unsigned char[width*height];
+		memcpy(raw0, raw, width*height);
+		memcpy(raw1, raw + width*height, width*height);
 
-	/*void __declspec(dllexport) GetLeapImage(unsigned char* out, int index) {
-		int width, height;
-		getDimensions(&width, &height);
-		unsigned char* image = new unsigned char[width * height];
-		getImage(image, index);
-		Mat frame(height, width, CV_8UC1, image);
-		memcpy(out, frame.data, frame.total() * frame.elemSize());
-	}*/
+		Mat img0(height, width, CV_8UC1, raw0);
+		Mat img1(height, width, CV_8UC1, raw1);
+		//memcpy(out, frame.data, frame.total() * frame.elemSize());
 
-	void configureLogging() {
+		Mat disp, disp8;
+		Ptr<StereoBM> sbm = StereoBM::create(16, 15);
+		sbm->compute(img0, img1, disp);
+		normalize(disp, disp8, 0, 255, NORM_MINMAX, CV_8U);
+
+		imshow("Image 1", img0);
+		imshow("Image 2", img1);
+		imshow("Disparity", disp8);
+	}
+
+	void configureLogging()
+	{
 		el::Configurations conf("D:\\Development\\Git\\LeapMotionToolTracking\\TestDLL\\TestDLL\\logging.conf");
 		el::Loggers::reconfigureAllLoggers(conf);
 	}

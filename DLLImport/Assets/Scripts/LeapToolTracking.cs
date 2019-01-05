@@ -17,32 +17,41 @@ public class LeapToolTracking : LeapImageRetriever {
         GameObject.Find("DisplayCamera1").GetComponentInChildren<MeshRenderer>().material.mainTexture = processedWebcam1;
     }
 
-    [DllImport("TestDLL", EntryPoint = "ProcessImageData")]
-    public static extern void ProcessImageData(byte[] raw, byte[] processed, int width, int height);
+    [DllImport("TestDLL", EntryPoint = "GetLeapImages")]
+    public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int size);
+
+    [DllImport("TestDLL", EntryPoint = "GetDepthMap")]
+    public static extern void ProcessImageData(byte[] img0, byte[] img1, byte[] disp, int width, int height);
 
     private void OnPreRender()
     {
         if (_currentImage != null)
         {
-            byte[] rawImg0 = _currentImage.Data(Leap.Image.CameraType.LEFT);
-            byte[] processedImg = new byte[rawImg0.Length];
-            ProcessImageData(rawImg0, processedImg, _currentImage.Width, _currentImage.Height);
+            int imageSize = _currentImage.Width * _currentImage.Height;
+            byte[] raw = _currentImage.Data(Leap.Image.CameraType.LEFT);
+            byte[] leftImgData = new byte[imageSize];
+            byte[] rightImgData = new byte[imageSize];
+
+            GetLeapImages(raw, leftImgData, rightImgData, imageSize);
+
+            //ProcessImageData(rawImg0, processedImg, _currentImage.Width, _currentImage.Height);
             //Debug.Log("Width: " + _currentImage.Width + ", Height: " + _currentImage.Height);
 
-            Color32[] processedColors0 = new Color32[_currentImage.Width * _currentImage.Height];
-            Color32[] processedColors1 = new Color32[_currentImage.Width * _currentImage.Height];
+            Color32[] leftImg = new Color32[imageSize];
+            Color32[] rightImg = new Color32[imageSize];
             for (int i = 0; i < _currentImage.Width; i++)
             {
                 for (int j = 0; j < _currentImage.Height; j++)
                 {
                     int index = j * _currentImage.Width + i;
-                    processedColors0[index] = new Color32(rawImg0[index], rawImg0[index], rawImg0[index], 1);
+                    leftImg[index] = new Color32(leftImgData[index], leftImgData[index], leftImgData[index], 1);
+                    rightImg[index] = new Color32(rightImgData[index], rightImgData[index], rightImgData[index], 1);
                 }
             }
 
-            processedWebcam0.SetPixels32(processedColors0);
+            processedWebcam0.SetPixels32(leftImg);
             processedWebcam0.Apply();
-            processedWebcam1.SetPixels32(processedColors1);
+            processedWebcam1.SetPixels32(rightImg);
             processedWebcam1.Apply();
         }
     }
