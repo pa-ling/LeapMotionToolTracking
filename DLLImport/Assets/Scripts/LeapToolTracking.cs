@@ -11,12 +11,15 @@ public class LeapToolTracking : LeapImageRetriever {
     private int TEX_HEIGHT = 400;
     private int MAX_FOV = 8;
 
+    private int ROW_OFFSET = 100;
+    private int COL_OFFSET = 60;
+
     private Texture2D processedWebcam0, processedWebcam1;
 
     private void Start()
     {
         Debug.Log("LeapToolTracking initalized.");
-        processedWebcam0 = new Texture2D(TEX_WIDTH, TEX_HEIGHT);
+        processedWebcam0 = new Texture2D(TEX_WIDTH - 2 * COL_OFFSET, TEX_HEIGHT - 2 * ROW_OFFSET);
         GameObject.Find("DisplayCamera0").GetComponentInChildren<MeshRenderer>().material.mainTexture = processedWebcam0;
         processedWebcam1 = new Texture2D(TEX_WIDTH, TEX_HEIGHT);
         GameObject.Find("DisplayCamera1").GetComponentInChildren<MeshRenderer>().material.mainTexture = processedWebcam1;
@@ -24,6 +27,9 @@ public class LeapToolTracking : LeapImageRetriever {
 
     [DllImport("TestDLL", EntryPoint = "ConvertByteToColor")]
     public static extern void ConvertByteToColor(byte[] raw, Color32[] img0, int width, int height);
+
+    [DllImport("TestDLL", EntryPoint = "CropImage")]
+    public static extern void CropImage(byte[] imgData, byte[] croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight);
 
     [DllImport("TestDLL", EntryPoint = "GetLeapImages")]
     public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int size);
@@ -42,16 +48,15 @@ public class LeapToolTracking : LeapImageRetriever {
             byte[] leftImgData = new byte[imageSize];
             byte[] rightImgData = new byte[imageSize];
             byte[] depthMap = new byte[imageSize];
-
             GetLeapImages(raw, leftImgData, rightImgData, imageSize);
 
             //Debug.Log("Width: " + _currentImage.Width + ", Height: " + _currentImage.Height);
 
             byte[] undistortedLeftImg = new byte[TEX_WIDTH * TEX_HEIGHT];
             byte[] undistortedRightImg = new byte[TEX_WIDTH * TEX_HEIGHT];
-            for (float row = 100; row < TEX_HEIGHT; row++)
+            for (float row = ROW_OFFSET; row < TEX_HEIGHT - ROW_OFFSET; row++)
             {
-                for (float col = 60; col < TEX_WIDTH; col++)
+                for (float col = COL_OFFSET; col < TEX_WIDTH - COL_OFFSET; col++)
                 {
                     //Normalize from pixel xy to range [0..1]
                     Leap.Vector input = new Leap.Vector();
@@ -62,7 +67,7 @@ public class LeapToolTracking : LeapImageRetriever {
                     input.x = (input.x - (float) .5) * MAX_FOV;
                     input.y = (input.y - (float) .5) * MAX_FOV;
 
-                    int dindex = (int)Mathf.Floor(row * TEX_WIDTH + col);
+                    int dindex = (int)Mathf.Floor((row - ROW_OFFSET) * TEX_WIDTH + col - COL_OFFSET);
 
                     Leap.Vector pixelLeft = _currentImage.RectilinearToPixel(Leap.Image.CameraType.LEFT, input);
                     int pindexLeft = (int) Mathf.Floor(pixelLeft.y) * _currentImage.Width + (int) Mathf.Floor(pixelLeft.x);
@@ -73,7 +78,7 @@ public class LeapToolTracking : LeapImageRetriever {
                     }
                     else
                     {
-                        undistortedLeftImg[dindex] = 0;
+                        undistortedLeftImg[dindex] = 128;
                     }
 
                     Leap.Vector pixelRight = _currentImage.RectilinearToPixel(Leap.Image.CameraType.RIGHT, input);
@@ -85,14 +90,17 @@ public class LeapToolTracking : LeapImageRetriever {
                     }
                     else
                     {
-                        undistortedRightImg[dindex] = 0;
+                        undistortedRightImg[dindex] = 128;
                     }
                 }
             }
 
-            Color32[] undistortedLeftImgColors = new Color32[TEX_WIDTH * TEX_HEIGHT];
-            Color32[] undistortedRightImgColors = new Color32[TEX_WIDTH * TEX_HEIGHT];
-            ConvertByteToColor(undistortedLeftImg, undistortedLeftImgColors, TEX_WIDTH, TEX_HEIGHT);
+            byte[] croppedUndistortedLeftImg = new byte[(TEX_WIDTH - 2*COL_OFFSET) * (TEX_HEIGHT - 2*ROW_OFFSET)];
+            CropImage(undistortedLeftImg, croppedUndistortedLeftImg, TEX_WIDTH, TEX_HEIGHT, 0, 0, TEX_WIDTH - 2*COL_OFFSET, TEX_HEIGHT - 2*ROW_OFFSET);
+
+            Color32[] undistortedLeftImgColors = new Color32[croppedUndistortedLeftImg.Length];
+            Color32[] undistortedRightImgColors = new Color32[undistortedRightImg.Length];
+            ConvertByteToColor(croppedUndistortedLeftImg, undistortedLeftImgColors, TEX_WIDTH- 2*COL_OFFSET, TEX_HEIGHT - 2 * ROW_OFFSET);
             ConvertByteToColor(undistortedRightImg, undistortedRightImgColors, TEX_WIDTH, TEX_HEIGHT);
             //GetDepthMap(undistortedLeftImg, undistortedRightImg, depthMap, TEX_WIDTH, TEX_HEIGHT);
 

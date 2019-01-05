@@ -47,6 +47,24 @@ extern "C" {
 		memcpy(img8uc3, threeChannelImage.data, threeChannelImage.total() * threeChannelImage.elemSize());
 	}
 
+	void __declspec(dllexport) CropImage(unsigned char* imgData, unsigned char* croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight)
+	{
+		configureLogging();
+		LOG(INFO) << "CropImage from (" <<  width << "," << height << ") to (" << startX << "," << startY << "," << cropWidth << "," << cropHeight << ")";
+
+		Mat image(height, width, CV_8UC1, imgData);
+		Mat ROI(image, Rect(startX, startY, cropWidth, cropHeight));
+
+		Mat croppedImage;
+		ROI.copyTo(croppedImage);
+
+		LOG(INFO) << "image size" << image.total() * image.elemSize();
+		LOG(INFO) << "cropped image size" << croppedImage.total() * croppedImage.elemSize();
+
+		imshow("Cropped", croppedImage);
+		memcpy(croppedImgData, croppedImage.data, croppedImage.total() * croppedImage.elemSize());
+	}
+
 	void __declspec(dllexport) GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size)
 	{
 		memcpy(img0, raw, size);
