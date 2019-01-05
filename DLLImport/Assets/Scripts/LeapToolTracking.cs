@@ -21,7 +21,7 @@ public class LeapToolTracking : LeapImageRetriever {
     public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int size);
 
     [DllImport("TestDLL", EntryPoint = "GetDepthMap")]
-    public static extern void ProcessImageData(byte[] img0, byte[] img1, byte[] disp, int width, int height);
+    public static extern void GetDepthMap(byte[] img0, byte[] img1, byte[] disp, int width, int height);
 
     private void OnPreRender()
     {
@@ -31,10 +31,11 @@ public class LeapToolTracking : LeapImageRetriever {
             byte[] raw = _currentImage.Data(Leap.Image.CameraType.LEFT);
             byte[] leftImgData = new byte[imageSize];
             byte[] rightImgData = new byte[imageSize];
+            byte[] depthMap = new byte[imageSize];
 
             GetLeapImages(raw, leftImgData, rightImgData, imageSize);
 
-            //ProcessImageData(rawImg0, processedImg, _currentImage.Width, _currentImage.Height);
+            GetDepthMap(leftImgData, rightImgData, depthMap, _currentImage.Width, _currentImage.Height);
             //Debug.Log("Width: " + _currentImage.Width + ", Height: " + _currentImage.Height);
 
             Color32[] leftImg = new Color32[imageSize];

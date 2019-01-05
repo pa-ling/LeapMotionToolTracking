@@ -41,24 +41,19 @@ extern "C" {
 	}
 
 	/* This function gets image data and processes it*/
-	void __declspec(dllexport) GetDepthMap(unsigned char* img0, unsigned char* img1, unsigned char* disp, int width, int height)
+	void __declspec(dllexport) GetDepthMap(unsigned char* img0, unsigned char* img1, unsigned char* depthMap, int width, int height)
 	{
-		unsigned char* raw0 = new unsigned char[width*height];
-		unsigned char* raw1 = new unsigned char[width*height];
-		memcpy(raw0, raw, width*height);
-		memcpy(raw1, raw + width*height, width*height);
-
-		Mat img0(height, width, CV_8UC1, raw0);
-		Mat img1(height, width, CV_8UC1, raw1);
-		//memcpy(out, frame.data, frame.total() * frame.elemSize());
+		Mat leftImg(height, width, CV_8UC1, img0);
+		Mat rightImg(height, width, CV_8UC1, img1);
 
 		Mat disp, disp8;
 		Ptr<StereoBM> sbm = StereoBM::create(16, 15);
-		sbm->compute(img0, img1, disp);
+		sbm->compute(leftImg, rightImg, disp);
 		normalize(disp, disp8, 0, 255, NORM_MINMAX, CV_8U);
+		//memcpy(depthMap, disp8.data, disp8.total() * disp8.elemSize());
 
-		imshow("Image 1", img0);
-		imshow("Image 2", img1);
+		imshow("Image 1", leftImg);
+		imshow("Image 2", rightImg);
 		imshow("Disparity", disp8);
 	}
 
