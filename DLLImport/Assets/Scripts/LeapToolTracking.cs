@@ -22,6 +22,9 @@ public class LeapToolTracking : LeapImageRetriever {
         GameObject.Find("DisplayCamera1").GetComponentInChildren<MeshRenderer>().material.mainTexture = processedWebcam1;
     }
 
+    [DllImport("TestDLL", EntryPoint = "ConvertByteToColor")]
+    public static extern void ConvertByteToColor(byte[] raw, Color32[] img0, int width, int height);
+
     [DllImport("TestDLL", EntryPoint = "GetLeapImages")]
     public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int size);
 
@@ -42,14 +45,13 @@ public class LeapToolTracking : LeapImageRetriever {
 
             GetLeapImages(raw, leftImgData, rightImgData, imageSize);
 
-            //GetDepthMap(leftImgData, rightImgData, depthMap, _currentImage.Width, _currentImage.Height);
             //Debug.Log("Width: " + _currentImage.Width + ", Height: " + _currentImage.Height);
 
-            Color32[] undistortedLeftImg = new Color32[TEX_WIDTH * TEX_HEIGHT];
-            Color32[] undistortedRightImg = new Color32[TEX_WIDTH * TEX_HEIGHT];
-            for (float row = 0; row < TEX_HEIGHT; row++)
+            byte[] undistortedLeftImg = new byte[TEX_WIDTH * TEX_HEIGHT];
+            byte[] undistortedRightImg = new byte[TEX_WIDTH * TEX_HEIGHT];
+            for (float row = 100; row < TEX_HEIGHT; row++)
             {
-                for (float col = 0; col < TEX_WIDTH; col++)
+                for (float col = 60; col < TEX_WIDTH; col++)
                 {
                     //Normalize from pixel xy to range [0..1]
                     Leap.Vector input = new Leap.Vector();
@@ -67,11 +69,11 @@ public class LeapToolTracking : LeapImageRetriever {
 
                     if (pixelLeft.x >= 0 && pixelLeft.x < _currentImage.Width && pixelLeft.y >= 0 && pixelLeft.y < _currentImage.Height)
                     {
-                        undistortedLeftImg[dindex] = new Color32(leftImgData[pindexLeft], leftImgData[pindexLeft], leftImgData[pindexLeft], 1);
+                        undistortedLeftImg[dindex] = leftImgData[pindexLeft];
                     }
                     else
                     {
-                        undistortedLeftImg[dindex] = new Color32(128, 128, 128, 1);
+                        undistortedLeftImg[dindex] = 0;
                     }
 
                     Leap.Vector pixelRight = _currentImage.RectilinearToPixel(Leap.Image.CameraType.RIGHT, input);
@@ -79,18 +81,24 @@ public class LeapToolTracking : LeapImageRetriever {
 
                     if (pixelRight.x >= 0 && pixelRight.x < _currentImage.Width && pixelRight.y >= 0 && pixelRight.y < _currentImage.Height)
                     {
-                        undistortedRightImg[dindex] = new Color32(rightImgData[pindexRight], rightImgData[pindexRight], rightImgData[pindexRight], 1);
+                        undistortedRightImg[dindex] = rightImgData[pindexRight];
                     }
                     else
                     {
-                        undistortedRightImg[dindex] = new Color32(128, 128, 128, 1);
+                        undistortedRightImg[dindex] = 0;
                     }
                 }
             }
 
-            processedWebcam0.SetPixels32(undistortedLeftImg);
+            Color32[] undistortedLeftImgColors = new Color32[TEX_WIDTH * TEX_HEIGHT];
+            Color32[] undistortedRightImgColors = new Color32[TEX_WIDTH * TEX_HEIGHT];
+            ConvertByteToColor(undistortedLeftImg, undistortedLeftImgColors, TEX_WIDTH, TEX_HEIGHT);
+            ConvertByteToColor(undistortedRightImg, undistortedRightImgColors, TEX_WIDTH, TEX_HEIGHT);
+            //GetDepthMap(undistortedLeftImg, undistortedRightImg, depthMap, TEX_WIDTH, TEX_HEIGHT);
+
+            processedWebcam0.SetPixels32(undistortedLeftImgColors);
             processedWebcam0.Apply();
-            processedWebcam1.SetPixels32(undistortedRightImg);
+            processedWebcam1.SetPixels32(undistortedRightImgColors);
             processedWebcam1.Apply();
         }
     }

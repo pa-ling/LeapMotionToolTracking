@@ -34,6 +34,19 @@ extern "C" {
 		destroyWindow("Test Image");
 	}
 
+	void __declspec(dllexport) ConvertByteToColor(unsigned char* img8uc1, unsigned char* img8uc3, int width, int height)
+	{
+		Mat singleChannelImage(height, width, CV_8UC1, img8uc1);
+
+		// copy channel 0 from the first image to all channels of the second image
+		int from_to[] = { 0,0, 0,1, 0,2 };
+		Mat threeChannelImage(singleChannelImage.size(), CV_8UC3);
+		mixChannels(&singleChannelImage, 1, &threeChannelImage, 1, from_to, 3);
+		cvtColor(threeChannelImage, threeChannelImage, COLOR_RGB2RGBA);
+
+		memcpy(img8uc3, threeChannelImage.data, threeChannelImage.total() * threeChannelImage.elemSize());
+	}
+
 	void __declspec(dllexport) GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size)
 	{
 		memcpy(img0, raw, size);
@@ -46,10 +59,15 @@ extern "C" {
 		Mat leftImg(height, width, CV_8UC1, img0);
 		Mat rightImg(height, width, CV_8UC1, img1);
 
+		int numberOfDisparities = 16;
+		int sgbmWinSize = 11;
+
+		Ptr<StereoSGBM> sgbm = StereoSGBM::create();
+		sgbm->setMode(StereoSGBM::MODE_SGBM);
+
 		Mat disp, disp8;
-		Ptr<StereoBM> sbm = StereoBM::create(16, 15);
-		sbm->compute(leftImg, rightImg, disp);
-		normalize(disp, disp8, 0, 255, NORM_MINMAX, CV_8U);
+		sgbm->compute(leftImg, rightImg, disp);
+		normalize(disp, disp8, 0, 255, NORM_MINMAX, CV_8UC1);
 		//memcpy(depthMap, disp8.data, disp8.total() * disp8.elemSize());
 
 		imshow("Image 1", leftImg);
