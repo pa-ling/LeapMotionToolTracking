@@ -7,24 +7,6 @@ using Leap.Unity;
 
 public class LeapToolTracking : LeapImageRetriever {
 
-    private int TEX_WIDTH = 400;
-    private int TEX_HEIGHT = 400;
-    private int MAX_FOV = 8;
-
-    private int ROW_OFFSET = 100;
-    private int COL_OFFSET = 60;
-
-    private Texture2D processedWebcam0, processedWebcam1;
-
-    private void Start()
-    {
-        Debug.Log("LeapToolTracking initalized.");
-        processedWebcam0 = new Texture2D(TEX_WIDTH - 2 * COL_OFFSET, TEX_HEIGHT - 2 * ROW_OFFSET);
-        GameObject.Find("DisplayCamera0").GetComponentInChildren<MeshRenderer>().material.mainTexture = processedWebcam0;
-        processedWebcam1 = new Texture2D(TEX_WIDTH, TEX_HEIGHT);
-        GameObject.Find("DisplayCamera1").GetComponentInChildren<MeshRenderer>().material.mainTexture = processedWebcam1;
-    }
-
     [DllImport("TestDLL", EntryPoint = "ConvertByteToColor")]
     public static extern void ConvertByteToColor(byte[] raw, Color32[] img0, int width, int height);
 
@@ -37,20 +19,36 @@ public class LeapToolTracking : LeapImageRetriever {
     [DllImport("TestDLL", EntryPoint = "GetDepthMap")]
     public static extern void GetDepthMap(byte[] img0, byte[] img1, byte[] disp, int width, int height);
 
+    private static int TEX_WIDTH = 400;
+    private static int TEX_HEIGHT = 400;
+    private static int MAX_FOV = 8;
+
+    private static int ROW_OFFSET = 100;
+    private static int COL_OFFSET = 60;
+    private static int WIDTH_WITH_OFFSET = TEX_WIDTH - 2 * COL_OFFSET;
+    private static int HEIGHT_WITH_OFFSET = TEX_HEIGHT - 2 * ROW_OFFSET;
+
+    private Texture2D leftCanvas, rightCanvas;
+
+    private void Start()
+    {
+        leftCanvas = new Texture2D(WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
+        GameObject.Find("DisplayCamera0").GetComponentInChildren<MeshRenderer>().material.mainTexture = leftCanvas;
+
+        rightCanvas = new Texture2D(WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
+        GameObject.Find("DisplayCamera1").GetComponentInChildren<MeshRenderer>().material.mainTexture = rightCanvas;
+    }
+
     private void OnPreRender()
     {
         if (_currentImage != null)
         {
-            //Debug.Log("left offset: " + _currentImage.ByteOffset(Leap.Image.CameraType.LEFT));
-            //Debug.Log("right offset: " + _currentImage.ByteOffset(Leap.Image.CameraType.RIGHT));
             int imageSize = _currentImage.Width * _currentImage.Height;
             byte[] raw = _currentImage.Data(Leap.Image.CameraType.LEFT);
             byte[] leftImgData = new byte[imageSize];
             byte[] rightImgData = new byte[imageSize];
             byte[] depthMap = new byte[imageSize];
             GetLeapImages(raw, leftImgData, rightImgData, imageSize);
-
-            //Debug.Log("Width: " + _currentImage.Width + ", Height: " + _currentImage.Height);
 
             byte[] undistortedLeftImg = new byte[TEX_WIDTH * TEX_HEIGHT];
             byte[] undistortedRightImg = new byte[TEX_WIDTH * TEX_HEIGHT];
@@ -67,8 +65,9 @@ public class LeapToolTracking : LeapImageRetriever {
                     input.x = (input.x - (float) .5) * MAX_FOV;
                     input.y = (input.y - (float) .5) * MAX_FOV;
 
-                    int dindex = (int)Mathf.Floor((row - ROW_OFFSET) * TEX_WIDTH + col - COL_OFFSET);
+                    int dindex = (int)Mathf.Floor(row * TEX_WIDTH + col);
 
+                    //left image
                     Leap.Vector pixelLeft = _currentImage.RectilinearToPixel(Leap.Image.CameraType.LEFT, input);
                     int pindexLeft = (int) Mathf.Floor(pixelLeft.y) * _currentImage.Width + (int) Mathf.Floor(pixelLeft.x);
 
@@ -81,6 +80,7 @@ public class LeapToolTracking : LeapImageRetriever {
                         undistortedLeftImg[dindex] = 128;
                     }
 
+                    //right image
                     Leap.Vector pixelRight = _currentImage.RectilinearToPixel(Leap.Image.CameraType.RIGHT, input);
                     int pindexRight = (int)Mathf.Floor(pixelRight.y) * _currentImage.Width + (int)Mathf.Floor(pixelRight.x);
 
@@ -95,19 +95,36 @@ public class LeapToolTracking : LeapImageRetriever {
                 }
             }
 
-            byte[] croppedUndistortedLeftImg = new byte[(TEX_WIDTH - 2*COL_OFFSET) * (TEX_HEIGHT - 2*ROW_OFFSET)];
-            CropImage(undistortedLeftImg, croppedUndistortedLeftImg, TEX_WIDTH, TEX_HEIGHT, 0, 0, TEX_WIDTH - 2*COL_OFFSET, TEX_HEIGHT - 2*ROW_OFFSET);
-
+            byte[] croppedUndistortedLeftImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET];
+            CropImage(
+                undistortedLeftImg,
+                croppedUndistortedLeftImg,
+                TEX_WIDTH, TEX_HEIGHT,
+                COL_OFFSET, //COL_OFFSET and ROW_OFFSET have to be swapped here
+                ROW_OFFSET,
+                WIDTH_WITH_OFFSET,
+                HEIGHT_WITH_OFFSET);
             Color32[] undistortedLeftImgColors = new Color32[croppedUndistortedLeftImg.Length];
-            Color32[] undistortedRightImgColors = new Color32[undistortedRightImg.Length];
-            ConvertByteToColor(croppedUndistortedLeftImg, undistortedLeftImgColors, TEX_WIDTH- 2*COL_OFFSET, TEX_HEIGHT - 2 * ROW_OFFSET);
-            ConvertByteToColor(undistortedRightImg, undistortedRightImgColors, TEX_WIDTH, TEX_HEIGHT);
+            ConvertByteToColor(croppedUndistortedLeftImg, undistortedLeftImgColors, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
+
+            byte[] croppedUndistortedRightImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET];
+            CropImage(
+                undistortedRightImg,
+                croppedUndistortedRightImg,
+                TEX_WIDTH, TEX_HEIGHT,
+                COL_OFFSET, //COL_OFFSET and ROW_OFFSET have to be swapped here
+                ROW_OFFSET,
+                WIDTH_WITH_OFFSET,
+                HEIGHT_WITH_OFFSET);
+            Color32[] undistortedRightImgColors = new Color32[croppedUndistortedRightImg.Length];
+            ConvertByteToColor(croppedUndistortedRightImg, undistortedRightImgColors, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
+            
             //GetDepthMap(undistortedLeftImg, undistortedRightImg, depthMap, TEX_WIDTH, TEX_HEIGHT);
 
-            processedWebcam0.SetPixels32(undistortedLeftImgColors);
-            processedWebcam0.Apply();
-            processedWebcam1.SetPixels32(undistortedRightImgColors);
-            processedWebcam1.Apply();
+            leftCanvas.SetPixels32(undistortedLeftImgColors);
+            leftCanvas.Apply();
+            rightCanvas.SetPixels32(undistortedRightImgColors);
+            rightCanvas.Apply();
         }
     }
 }

@@ -58,8 +58,8 @@ extern "C" {
 		Mat croppedImage;
 		ROI.copyTo(croppedImage);
 
-		LOG(INFO) << "image size" << image.total() * image.elemSize();
-		LOG(INFO) << "cropped image size" << croppedImage.total() * croppedImage.elemSize();
+		LOG(INFO) << "image size: " << image.total() * image.elemSize();
+		LOG(INFO) << "cropped image size: " << croppedImage.total() * croppedImage.elemSize();
 
 		imshow("Cropped", croppedImage);
 		memcpy(croppedImgData, croppedImage.data, croppedImage.total() * croppedImage.elemSize());
