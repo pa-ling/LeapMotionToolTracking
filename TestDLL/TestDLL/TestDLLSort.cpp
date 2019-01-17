@@ -20,8 +20,6 @@ extern "C" {
 	/* This function tests the availability of opencv */
 	void __declspec(dllexport) ShowImage(char* path)
 	{
-		configureLogging();
-
 		int length = strlen(path) + 1;
 		char* res = (char*)malloc(length);
 		strcpy_s(res, length, path);
@@ -49,7 +47,6 @@ extern "C" {
 
 	void __declspec(dllexport) CropImage(unsigned char* imgData, unsigned char* croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight)
 	{
-		configureLogging();
 		LOG(INFO) << "CropImage from (" <<  width << "," << height << ") to (" << startX << "," << startY << "," << cropWidth << "," << cropHeight << ")";
 
 		Mat image(height, width, CV_8UC1, imgData);
@@ -58,10 +55,6 @@ extern "C" {
 		Mat croppedImage;
 		ROI.copyTo(croppedImage);
 
-		LOG(INFO) << "image size: " << image.total() * image.elemSize();
-		LOG(INFO) << "cropped image size: " << croppedImage.total() * croppedImage.elemSize();
-
-		imshow("Cropped", croppedImage);
 		memcpy(croppedImgData, croppedImage.data, croppedImage.total() * croppedImage.elemSize());
 	}
 
@@ -77,14 +70,19 @@ extern "C" {
 		Mat leftImg(height, width, CV_8UC1, img0);
 		Mat rightImg(height, width, CV_8UC1, img1);
 
-		int numberOfDisparities = 16;
-		int sgbmWinSize = 11;
+		int sgbmWinSize = 15;
 
-		Ptr<StereoSGBM> sgbm = StereoSGBM::create();
-		sgbm->setMode(StereoSGBM::MODE_SGBM);
+		Ptr<StereoBM> sbm = StereoBM::create();
+		sbm->setNumDisparities(16);
+		sbm->setBlockSize(15);
+		/*sbm->setTextureThreshold(10);
+		sbm->setSpeckleWindowSize(100);
+		sbm->setSpeckleRange(32);
+		sbm->setMinDisparity(0);
+		sbm->setUniquenessRatio(0);*/
 
 		Mat disp, disp8;
-		sgbm->compute(leftImg, rightImg, disp);
+		sbm->compute(leftImg, rightImg, disp);
 		normalize(disp, disp8, 0, 255, NORM_MINMAX, CV_8UC1);
 		//memcpy(depthMap, disp8.data, disp8.total() * disp8.elemSize());
 
@@ -93,9 +91,17 @@ extern "C" {
 		imshow("Disparity", disp8);
 	}
 
-	void configureLogging()
+	/* This function gets image data and processes it*/
+	void __declspec(dllexport) GetMarkerLocations(unsigned char* img0, unsigned char* img1, int markerLocations[], int width, int height)
 	{
-		el::Configurations conf("D:\\Development\\Git\\LeapMotionToolTracking\\TestDLL\\TestDLL\\logging.conf");
-		el::Loggers::reconfigureAllLoggers(conf);
+		Mat leftImg(height, width, CV_8UC1, img0);
+
+		double minVal; double maxVal; Point minLoc; Point maxLoc;
+		minMaxLoc(leftImg, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
+
+		//rectangle(leftImg, maxLoc, Point(maxLoc.x + leftImg.cols, maxLoc.y + leftImg.rows), Scalar::all(0), 2, 8, 0);
+		circle(leftImg, maxLoc, 5, Scalar(255, 255, 255), 2);
+
+		imshow("Image 1", leftImg);
 	}
 }

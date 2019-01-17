@@ -19,6 +19,9 @@ public class LeapToolTracking : LeapImageRetriever {
     [DllImport("TestDLL", EntryPoint = "GetDepthMap")]
     public static extern void GetDepthMap(byte[] img0, byte[] img1, byte[] disp, int width, int height);
 
+    [DllImport("TestDLL", EntryPoint = "GetMarkerLocations")]
+    public static extern void GetMarkerLocations(byte[] img0, byte[] img1, int[] markerLocations, int width, int height);
+
     private static int TEX_WIDTH = 400;
     private static int TEX_HEIGHT = 400;
     private static int MAX_FOV = 8;
@@ -77,7 +80,7 @@ public class LeapToolTracking : LeapImageRetriever {
                     }
                     else
                     {
-                        undistortedLeftImg[dindex] = 128;
+                        undistortedLeftImg[dindex] = 0;
                     }
 
                     //right image
@@ -90,7 +93,7 @@ public class LeapToolTracking : LeapImageRetriever {
                     }
                     else
                     {
-                        undistortedRightImg[dindex] = 128;
+                        undistortedRightImg[dindex] = 0;
                     }
                 }
             }
@@ -118,8 +121,9 @@ public class LeapToolTracking : LeapImageRetriever {
                 HEIGHT_WITH_OFFSET);
             Color32[] undistortedRightImgColors = new Color32[croppedUndistortedRightImg.Length];
             ConvertByteToColor(croppedUndistortedRightImg, undistortedRightImgColors, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
-            
-            //GetDepthMap(undistortedLeftImg, undistortedRightImg, depthMap, TEX_WIDTH, TEX_HEIGHT);
+
+            //GetDepthMap(croppedUndistortedLeftImg, croppedUndistortedRightImg, depthMap, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
+            GetMarkerLocations(croppedUndistortedLeftImg, croppedUndistortedRightImg, null, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
 
             leftCanvas.SetPixels32(undistortedLeftImgColors);
             leftCanvas.Apply();
