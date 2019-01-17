@@ -11,6 +11,8 @@ using namespace std;
 
 extern "C" {
 
+	int maskRadius = 20;
+
 	/* This function tests data transport between DLL and caller */
 	void __declspec(dllexport) SortIntArray(int a[], int length)
 	{
@@ -96,12 +98,20 @@ extern "C" {
 	{
 		Mat leftImg(height, width, CV_8UC1, img0);
 
+		//Get brightest point in the picture = first marker
 		double minVal; double maxVal; Point minLoc; Point maxLoc;
 		minMaxLoc(leftImg, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
+		threshold(leftImg, leftImg, maxVal-20, 255, THRESH_BINARY);
 
-		//rectangle(leftImg, maxLoc, Point(maxLoc.x + leftImg.cols, maxLoc.y + leftImg.rows), Scalar::all(0), 2, 8, 0);
-		circle(leftImg, maxLoc, 5, Scalar(255, 255, 255), 2);
+		//Create circular mask around the first marker
+		Mat mask = Mat::zeros(height, width, CV_8UC1);
+		circle(mask, maxLoc, maskRadius, Scalar(255, 255, 255), -1);
 
-		imshow("Image 1", leftImg);
+		Mat maskedImage = Mat::zeros(height, width, CV_8UC1);
+		leftImg.copyTo(maskedImage, mask); //input and output must not be the same!
+
+		//circle(leftImg, maxLoc, maskRadius, Scalar(255, 255, 255), 1);
+
+		imshow("Masked Image", maskedImage);
 	}
 }
