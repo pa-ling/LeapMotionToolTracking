@@ -157,12 +157,12 @@
     <ClCompile Include="DLLInterfaceTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TestDLL\TestDLL.vcxproj">
-      <Project>{08caf3c5-9cdc-44bd-82fc-d6165543d24f}</Project>
-    </ProjectReference>
+    <None Include="test.runsettings" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="test.runsettings" />
+    <ProjectReference Include="..\LeapTT\LeapTT.vcxproj">
+      <Project>{41efae7a-c3aa-4d07-a1de-57ffc4843ce6}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

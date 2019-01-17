@@ -7,19 +7,19 @@ using Leap.Unity;
 
 public class LeapToolTracking : LeapImageRetriever {
 
-    [DllImport("TestDLL", EntryPoint = "ConvertByteToColor")]
+    [DllImport("LeapTT", EntryPoint = "ConvertByteToColor")]
     public static extern void ConvertByteToColor(byte[] raw, Color32[] img0, int width, int height);
 
-    [DllImport("TestDLL", EntryPoint = "CropImage")]
+    [DllImport("LeapTT", EntryPoint = "CropImage")]
     public static extern void CropImage(byte[] imgData, byte[] croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight);
 
-    [DllImport("TestDLL", EntryPoint = "GetLeapImages")]
+    [DllImport("LeapTT", EntryPoint = "GetLeapImages")]
     public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int size);
 
-    [DllImport("TestDLL", EntryPoint = "GetDepthMap")]
+    [DllImport("LeapTT", EntryPoint = "GetDepthMap")]
     public static extern void GetDepthMap(byte[] img0, byte[] img1, byte[] disp, int width, int height);
 
-    [DllImport("TestDLL", EntryPoint = "GetMarkerLocations")]
+    [DllImport("LeapTT", EntryPoint = "GetMarkerLocations")]
     public static extern void GetMarkerLocations(byte[] img0, byte[] img1, int[] markerLocations, int width, int height);
 
     private static int TEX_WIDTH = 400;

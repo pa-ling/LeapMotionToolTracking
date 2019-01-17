@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "..\TestDLL\TestDLLSort.h"
+#include "..\LeapTT\Main.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

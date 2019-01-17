@@ -1,5 +1,5 @@
 extern "C" {
-#include "TestDLLSort.h"
+#include "Main.h"
 }
 #include <opencv2/opencv.hpp>
 #include "easylogging++.h"

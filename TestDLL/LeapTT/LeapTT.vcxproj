@@ -19,10 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{08CAF3C5-9CDC-44BD-82FC-D6165543D24F}</ProjectGuid>
+    <ProjectGuid>{41EFAE7A-C3AA-4D07-A1DE-57FFC4843CE6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>TestDLL</RootNamespace>
+    <RootNamespace>LeapTT</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <ProjectName>LeapTT</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -153,14 +154,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="easylogging++.h" />
-    <ClInclude Include="TestDLLSort.h" />
+    <ClInclude Include="Main.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="easylogging++.cpp" />
-    <ClCompile Include="TestDLLSort.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="logging.conf" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
