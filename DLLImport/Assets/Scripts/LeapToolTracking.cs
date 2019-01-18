@@ -20,7 +20,7 @@ public class LeapToolTracking : LeapImageRetriever {
     public static extern void GetDepthMap(byte[] img0, byte[] img1, byte[] disp, int width, int height);
 
     [DllImport("LeapTT", EntryPoint = "GetMarkerLocations")]
-    public static extern void GetMarkerLocations(byte[] img0, byte[] img1, int[] markerLocations, int width, int height);
+    public static extern void GetMarkerLocations(byte[] imgData, int[] markerLocations, int width, int height);
 
     private static int TEX_WIDTH = 400;
     private static int TEX_HEIGHT = 400;
@@ -123,7 +123,9 @@ public class LeapToolTracking : LeapImageRetriever {
             ConvertByteToColor(croppedUndistortedRightImg, undistortedRightImgColors, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
 
             //GetDepthMap(croppedUndistortedLeftImg, croppedUndistortedRightImg, depthMap, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
-            GetMarkerLocations(croppedUndistortedLeftImg, croppedUndistortedRightImg, null, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
+            int[] markerLocations = new int[4];
+            GetMarkerLocations(croppedUndistortedLeftImg, markerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
+            Debug.Log("(" + markerLocations[0] + ", " + markerLocations[1] + ", " + markerLocations[2] + ", " + markerLocations[3] + ")");
 
             leftCanvas.SetPixels32(undistortedLeftImgColors);
             leftCanvas.Apply();

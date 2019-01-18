@@ -92,26 +92,26 @@ extern "C" {
 	}
 
 	/* This function gets image data and processes it*/
-	void __declspec(dllexport) GetMarkerLocations(unsigned char* img0, unsigned char* img1, int markerLocations[], int width, int height)
+	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, int markerLocations[], int width, int height)
 	{
-		Mat leftImg(height, width, CV_8UC1, img0);
+		Mat img(height, width, CV_8UC1, imgData);
 
 		// Get brightest point in the picture = first marker
 		double minVal; double maxVal; Point minLoc; Point maxLoc;
-		minMaxLoc(leftImg, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
-		threshold(leftImg, leftImg, maxVal-15, 255, THRESH_BINARY);
+		minMaxLoc(img, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
+		threshold(img, img, maxVal-15, 255, THRESH_BINARY);
 
 		// Create circular mask around the first marker
 		Mat mask = Mat::zeros(height, width, CV_8UC1);
 		circle(mask, maxLoc, maskRadius, Scalar(255, 255, 255), -1);
 
-		Mat maskedImage = Mat::zeros(height, width, CV_8UC1);
-		leftImg.copyTo(maskedImage, mask); // input and output must not be the same!
+		Mat maskedImg = Mat::zeros(height, width, CV_8UC1);
+		img.copyTo(maskedImg, mask); // input and output must not be the same!
 
 		// Get contours
 		vector<vector<Point>> contours;
 		vector<Vec4i> hierarchy;
-		findContours(leftImg, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+		findContours(maskedImg, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 		// Approximate contours to polygons + get bounding rects and circles
 		vector<Point2f>center(contours.size());
@@ -122,9 +122,15 @@ extern "C" {
 			minEnclosingCircle((Mat)contours[i], center[i], radius[i]);
 		}
 
+
+
 		// Draw polygonal contour + bonding rects + circles
-		Mat drawing = Mat::zeros(leftImg.size(), CV_8UC3);
+		Mat drawing = Mat::zeros(maskedImg.size(), CV_8UC3);
 		if (contours.size() >= 2) {
+			markerLocations[0] = center[0].x;
+			markerLocations[1] = center[0].y;
+			markerLocations[2] = center[1].x;
+			markerLocations[3] = center[1].y;
 			circle(drawing, center[0], 5, Scalar(0, 0, 255), 1);
 			circle(drawing, center[1], 5, Scalar(0, 0, 255), 1);
 		}
@@ -133,6 +139,6 @@ extern "C" {
 		LOG(INFO) << "Conturs " << contours.size();
 
 		imshow("Contours" , drawing);
-		imshow("Masked Image", maskedImage);
+		imshow("Masked Image", maskedImg);
 	}
 }
