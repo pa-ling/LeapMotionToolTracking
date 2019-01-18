@@ -99,7 +99,7 @@ extern "C" {
 		// Get brightest point in the picture = first marker
 		double minVal; double maxVal; Point minLoc; Point maxLoc;
 		minMaxLoc(leftImg, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
-		threshold(leftImg, leftImg, maxVal-20, 255, THRESH_BINARY);
+		threshold(leftImg, leftImg, maxVal-15, 255, THRESH_BINARY);
 
 		// Create circular mask around the first marker
 		Mat mask = Mat::zeros(height, width, CV_8UC1);
@@ -113,13 +113,20 @@ extern "C" {
 		vector<Vec4i> hierarchy;
 		findContours(leftImg, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-		// Draw contours
-		RNG rng(12345);
-		Mat drawing = Mat::zeros(leftImg.size(), CV_8UC3);
-		for (int i = 0; i< contours.size(); i++)
+		// Approximate contours to polygons + get bounding rects and circles
+		vector<Point2f>center(contours.size());
+		vector<float>radius(contours.size());
+
+		for (int i = 0; i < contours.size(); i++)
 		{
-			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-			drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
+			minEnclosingCircle((Mat)contours[i], center[i], radius[i]);
+		}
+
+		// Draw polygonal contour + bonding rects + circles
+		Mat drawing = Mat::zeros(leftImg.size(), CV_8UC3);
+		if (contours.size() >= 2) {
+			circle(drawing, center[0], 5, Scalar(0, 0, 255), 1);
+			circle(drawing, center[1], 5, Scalar(0, 0, 255), 1);
 		}
 
 		//circle(leftImg, maxLoc, maskRadius, Scalar(255, 255, 255), 1);
