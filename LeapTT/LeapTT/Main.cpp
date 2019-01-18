@@ -49,8 +49,6 @@ extern "C" {
 
 	void __declspec(dllexport) CropImage(unsigned char* imgData, unsigned char* croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight)
 	{
-		LOG(INFO) << "CropImage from (" <<  width << "," << height << ") to (" << startX << "," << startY << "," << cropWidth << "," << cropHeight << ")";
-
 		Mat image(height, width, CV_8UC1, imgData);
 		Mat ROI(image, Rect(startX, startY, cropWidth, cropHeight));
 
@@ -98,20 +96,36 @@ extern "C" {
 	{
 		Mat leftImg(height, width, CV_8UC1, img0);
 
-		//Get brightest point in the picture = first marker
+		// Get brightest point in the picture = first marker
 		double minVal; double maxVal; Point minLoc; Point maxLoc;
 		minMaxLoc(leftImg, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
 		threshold(leftImg, leftImg, maxVal-20, 255, THRESH_BINARY);
 
-		//Create circular mask around the first marker
+		// Create circular mask around the first marker
 		Mat mask = Mat::zeros(height, width, CV_8UC1);
 		circle(mask, maxLoc, maskRadius, Scalar(255, 255, 255), -1);
 
 		Mat maskedImage = Mat::zeros(height, width, CV_8UC1);
-		leftImg.copyTo(maskedImage, mask); //input and output must not be the same!
+		leftImg.copyTo(maskedImage, mask); // input and output must not be the same!
+
+		// Get contours
+		vector<vector<Point>> contours;
+		vector<Vec4i> hierarchy;
+		findContours(leftImg, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+
+		// Draw contours
+		RNG rng(12345);
+		Mat drawing = Mat::zeros(leftImg.size(), CV_8UC3);
+		for (int i = 0; i< contours.size(); i++)
+		{
+			Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+			drawContours(drawing, contours, i, color, 2, 8, hierarchy, 0, Point());
+		}
 
 		//circle(leftImg, maxLoc, maskRadius, Scalar(255, 255, 255), 1);
+		LOG(INFO) << "Conturs " << contours.size();
 
+		imshow("Contours" , drawing);
 		imshow("Masked Image", maskedImage);
 	}
 }
