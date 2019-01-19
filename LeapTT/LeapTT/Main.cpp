@@ -11,28 +11,7 @@ using namespace std;
 
 extern "C" {
 
-	int maskRadius = 20;
-
-	/* This function tests data transport between DLL and caller */
-	void __declspec(dllexport) SortIntArray(int a[], int length)
-	{
-		sort(a, a + length);
-	}
-
-	/* This function tests the availability of opencv */
-	void __declspec(dllexport) ShowImage(char* path)
-	{
-		int length = strlen(path) + 1;
-		char* res = (char*)malloc(length);
-		strcpy_s(res, length, path);
-
-		LOG(INFO) << "ShowImage > path: " << res;
-		free(res);
-		Mat image = imread(path, IMREAD_COLOR);
-		imshow("Test Image", image);
-		waitKey(1000); //Wait for 1 second before closing the window
-		destroyWindow("Test Image");
-	}
+	int MASK_RADIUS = 20;
 
 	void __declspec(dllexport) ConvertByteToColor(unsigned char* img8uc1, unsigned char* img8uc3, int width, int height)
 	{
@@ -64,7 +43,6 @@ extern "C" {
 		memcpy(img1, raw + size, size);
 	}
 
-	/* This function gets image data and processes it*/
 	void __declspec(dllexport) GetDepthMap(unsigned char* img0, unsigned char* img1, unsigned char* depthMap, int width, int height)
 	{
 		Mat leftImg(height, width, CV_8UC1, img0);
@@ -91,7 +69,6 @@ extern "C" {
 		imshow("Disparity", disp8);
 	}
 
-	/* This function gets image data and processes it*/
 	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, int markerLocations[], int width, int height)
 	{
 		Mat img(height, width, CV_8UC1, imgData);
@@ -103,7 +80,7 @@ extern "C" {
 
 		// Create circular mask around the first marker
 		Mat mask = Mat::zeros(height, width, CV_8UC1);
-		circle(mask, maxLoc, maskRadius, Scalar(255, 255, 255), -1);
+		circle(mask, maxLoc, MASK_RADIUS, Scalar(255, 255, 255), -1);
 
 		Mat maskedImg = Mat::zeros(height, width, CV_8UC1);
 		img.copyTo(maskedImg, mask); // input and output must not be the same!
@@ -136,7 +113,6 @@ extern "C" {
 		}
 
 		//circle(leftImg, maxLoc, maskRadius, Scalar(255, 255, 255), 1);
-		LOG(INFO) << "Conturs " << contours.size();
 
 		imshow("Contours" , drawing);
 		imshow("Masked Image", maskedImg);
