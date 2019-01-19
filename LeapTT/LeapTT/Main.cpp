@@ -99,8 +99,6 @@ extern "C" {
 			minEnclosingCircle((Mat)contours[i], center[i], radius[i]);
 		}
 
-
-
 		// Draw polygonal contour + bonding rects + circles
 		Mat drawing = Mat::zeros(maskedImg.size(), CV_8UC3);
 		if (contours.size() >= 2) {
