@@ -145,10 +145,10 @@ public class LeapToolTracking : LeapImageRetriever
         float x_2R = rightMarkerLocations[2];
         float distance1 = (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (x_1L - x_1R));
         float distance2 = (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (x_2L - x_2R));
-        //Debug.Log("(" + x_1L + ", " + leftMarkerLocations[1] + ", " + distance1 + ")");
+        Debug.Log("(" + x_1L + ", " + leftMarkerLocations[1] + ", " + distance1 + ")");
 
-        marker1.transform.position = new Vector3(-x_1L, distance1, -leftMarkerLocations[1]);
-        marker2.transform.position = new Vector3(-x_2L, distance2, -leftMarkerLocations[3]);
+        marker1.transform.position = new Vector3(-x_1L + WIDTH_WITH_OFFSET / 2, distance1, -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET) / 10.0f;
+        marker2.transform.position = new Vector3(-x_2L + WIDTH_WITH_OFFSET / 2, distance2, -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET) / 10.0f;
 
         leftCanvas.SetPixels32(undistortedLeftImgColors);
         leftCanvas.Apply();
