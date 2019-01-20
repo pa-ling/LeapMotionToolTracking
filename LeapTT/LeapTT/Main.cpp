@@ -76,7 +76,7 @@ extern "C" {
 		// Get brightest point in the picture = first marker
 		double minVal; double maxVal; Point minLoc; Point maxLoc;
 		minMaxLoc(img, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
-		threshold(img, img, maxVal-15, 255, THRESH_BINARY);
+		threshold(img, img, maxVal - 15, 255, THRESH_BINARY);
 
 		// Create circular mask around the first marker
 		Mat mask = Mat::zeros(height, width, CV_8UC1);
@@ -113,7 +113,7 @@ extern "C" {
 
 		//circle(leftImg, maxLoc, maskRadius, Scalar(255, 255, 255), 1);
 
-		imshow("Contours" , drawing);
+		imshow("Contours", drawing);
 		imshow("Masked Image", maskedImg);
 	}
 }
