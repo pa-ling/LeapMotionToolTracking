@@ -69,7 +69,7 @@ extern "C" {
 		imshow("Disparity", disp8);
 	}
 
-	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, int markerLocations[], int width, int height)
+	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height)
 	{
 		Mat img(height, width, CV_8UC1, imgData);
 
@@ -108,6 +108,7 @@ extern "C" {
 			markerLocations[3] = center[1].y;
 			circle(drawing, center[0], 5, Scalar(0, 0, 255), 1);
 			circle(drawing, center[1], 5, Scalar(0, 0, 255), 1);
+			LOG(INFO) << "(" << markerLocations[0] << ", " << markerLocations[1] << ", " << markerLocations[2] << ", " << markerLocations[3] << ")";
 		}
 
 		//circle(leftImg, maxLoc, maskRadius, Scalar(255, 255, 255), 1);

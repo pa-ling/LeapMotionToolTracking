@@ -7,7 +7,7 @@ extern "C"
 	__declspec(dllexport) void CropImage(unsigned char* imgData, unsigned char* croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight);
 	__declspec(dllexport) void GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size);
 	__declspec(dllexport) void GetDepthMap(unsigned char* img0, unsigned char* img1, unsigned char* depthMap, int width, int height);
-	__declspec(dllexport) void GetMarkerLocations(unsigned char* imgData, int markerLocations[], int width, int height);
+	__declspec(dllexport) void GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height);
 }
 
 #endif

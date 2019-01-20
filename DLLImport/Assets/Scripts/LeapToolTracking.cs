@@ -20,7 +20,10 @@ public class LeapToolTracking : LeapImageRetriever {
     public static extern void GetDepthMap(byte[] img0, byte[] img1, byte[] disp, int width, int height);
 
     [DllImport("LeapTT", EntryPoint = "GetMarkerLocations")]
-    public static extern void GetMarkerLocations(byte[] imgData, int[] markerLocations, int width, int height);
+    public static extern void GetMarkerLocations(byte[] imgData, float[] markerLocations, int width, int height);
+
+    public GameObject marker1;
+    public GameObject marker2;
 
     private static int TEX_WIDTH = 400;
     private static int TEX_HEIGHT = 400;
@@ -30,6 +33,9 @@ public class LeapToolTracking : LeapImageRetriever {
     private static int COL_OFFSET = 60;
     private static int WIDTH_WITH_OFFSET = TEX_WIDTH - 2 * COL_OFFSET;
     private static int HEIGHT_WITH_OFFSET = TEX_HEIGHT - 2 * ROW_OFFSET;
+
+    private static float DISTANCE_OF_CAMERAS = 3.75f;
+    private static float CAMERA_ANGLE = 140;
 
     private Texture2D leftCanvas, rightCanvas;
 
@@ -50,7 +56,6 @@ public class LeapToolTracking : LeapImageRetriever {
             byte[] raw = _currentImage.Data(Leap.Image.CameraType.LEFT);
             byte[] leftImgData = new byte[imageSize];
             byte[] rightImgData = new byte[imageSize];
-            byte[] depthMap = new byte[imageSize];
             GetLeapImages(raw, leftImgData, rightImgData, imageSize);
 
             byte[] undistortedLeftImg = new byte[TEX_WIDTH * TEX_HEIGHT];
@@ -122,13 +127,24 @@ public class LeapToolTracking : LeapImageRetriever {
             Color32[] undistortedRightImgColors = new Color32[croppedUndistortedRightImg.Length];
             ConvertByteToColor(croppedUndistortedRightImg, undistortedRightImgColors, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
 
-            int[] leftMarkerLocations = new int[4];
+            float[] leftMarkerLocations = new float[4];
             GetMarkerLocations(croppedUndistortedLeftImg, leftMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
-            Debug.Log("Left(" + leftMarkerLocations[0] + ", " + leftMarkerLocations[1] + ", " + leftMarkerLocations[2] + ", " + leftMarkerLocations[3] + ")");
+            //Debug.Log(System.DateTime.Now + ": Left(" + leftMarkerLocations[0] + ", " + leftMarkerLocations[1] + ", " + leftMarkerLocations[2] + ", " + leftMarkerLocations[3] + ")");
 
-            int[] rightMarkerLocations = new int[4];
+            float[] rightMarkerLocations = new float[4];
             GetMarkerLocations(croppedUndistortedRightImg, rightMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
-            Debug.Log("Right(" + rightMarkerLocations[0] + ", " + rightMarkerLocations[1] + ", " + rightMarkerLocations[2] + ", " + rightMarkerLocations[3] + ")");
+            //Debug.Log(System.DateTime.Now + ": Right(" + rightMarkerLocations[0] + ", " + rightMarkerLocations[1] + ", " + rightMarkerLocations[2] + ", " + rightMarkerLocations[3] + ")");
+
+            float x_1L = leftMarkerLocations[0];
+            float x_2L = leftMarkerLocations[2];
+            float x_1R = rightMarkerLocations[0];
+            float x_2R = rightMarkerLocations[2];
+            float distance1 = (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (x_1L - x_1R));
+            float distance2 = (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (x_2L - x_2R));
+            //Debug.Log("(" + x_1L + ", " + leftMarkerLocations[1] + ", " + distance1 + ")");
+
+            marker1.transform.position = new Vector3(-x_1L, distance1, -leftMarkerLocations[1]);
+            marker2.transform.position = new Vector3(-x_2L, distance2, -leftMarkerLocations[3]);
 
             leftCanvas.SetPixels32(undistortedLeftImgColors);
             leftCanvas.Apply();
