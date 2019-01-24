@@ -13,6 +13,9 @@ extern "C" {
 
 	int MASK_RADIUS = 20;
 
+	int leftLastPositions[4] = { -1, -1, -1, -1 };
+	int rightLastPositions[4] = { -1, -1, -1, -1 };
+
 	void __declspec(dllexport) ConvertByteToColor(unsigned char* img8uc1, unsigned char* img8uc3, int width, int height)
 	{
 		Mat singleChannelImage(height, width, CV_8UC1, img8uc1);
@@ -69,51 +72,68 @@ extern "C" {
 		imshow("Disparity", disp8);
 	}
 
-	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height)
+	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height, int camera)
 	{
 		Mat img(height, width, CV_8UC1, imgData);
+		imshow("Image", img);
+
+		//GaussianBlur(img, img, Size(3, 3), 0);
+		//imshow("Blurred Image", img);
+
+		//threshold(img, img, 150, 255, THRESH_TOZERO);
 
 		// Get brightest point in the picture = first marker
 		double minVal; double maxVal; Point minLoc; Point maxLoc;
 		minMaxLoc(img, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
-		threshold(img, img, maxVal - 15, 255, THRESH_BINARY);
+		threshold(img, img, maxVal - 30, 255, THRESH_BINARY);
+		imshow("Adaptive Threshold Image", img);
 
 		// Create circular mask around the first marker
-		Mat mask = Mat::zeros(height, width, CV_8UC1);
-		circle(mask, maxLoc, MASK_RADIUS, Scalar(255, 255, 255), -1);
-
-		Mat maskedImg = Mat::zeros(height, width, CV_8UC1);
-		img.copyTo(maskedImg, mask); // input and output must not be the same!
+		//Mat mask = Mat::zeros(img.size(), CV_8UC1);
+		//circle(mask, maxLoc, MASK_RADIUS, Scalar(255, 255, 255), -1);
+		//Mat maskedImg = Mat::zeros(height, width, CV_8UC1);
+		//img.copyTo(maskedImg, mask); // input and output must not be the same!
+		//imshow("Masked Image", maskedImg);
 
 		// Get contours
 		vector<vector<Point>> contours;
 		vector<Vec4i> hierarchy;
-		findContours(maskedImg, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+		findContours(img, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-		// Approximate contours to polygons + get bounding rects and circles
+		//get bounding circles of contours
 		vector<Point2f>center(contours.size());
 		vector<float>radius(contours.size());
-
-		for (int i = 0; i < contours.size(); i++)
-		{
+		Mat drawing = Mat::zeros(img.size(), CV_8UC3);
+		for (int i = 0; i < contours.size(); i++) {
 			minEnclosingCircle((Mat)contours[i], center[i], radius[i]);
+			Scalar color = Scalar(0, 0, 255);
+			if (i == 0 || i == 1) {
+				color = Scalar(0, 255, 0);
+			}
+			circle(drawing, center[i], radius[i], color, 1);
 		}
 
-		// Draw polygonal contour + bonding rects + circles
-		Mat drawing = Mat::zeros(maskedImg.size(), CV_8UC3);
 		if (contours.size() >= 2) {
 			markerLocations[0] = center[0].x;
 			markerLocations[1] = center[0].y;
 			markerLocations[2] = center[1].x;
 			markerLocations[3] = center[1].y;
-			circle(drawing, center[0], 5, Scalar(0, 0, 255), 1);
-			circle(drawing, center[1], 5, Scalar(0, 0, 255), 1);
-			LOG(INFO) << "(" << markerLocations[0] << ", " << markerLocations[1] << ", " << markerLocations[2] << ", " << markerLocations[3] << ")";
+			LOG(INFO) << "0(" << leftLastPositions[0] << ", " << leftLastPositions[1] << ", " << leftLastPositions[2] << ", " << leftLastPositions[3] << ")";
+			LOG(INFO) << "1(" << rightLastPositions[0] << ", " << rightLastPositions[1] << ", " << rightLastPositions[2] << ", " << rightLastPositions[3] << ")";
+			LOG(INFO) << camera << "*(" << markerLocations[0] << ", " << markerLocations[1] << ", " << markerLocations[2] << ", " << markerLocations[3] << ")";
+		}
+		else {
+			LOG(INFO) << "(0)";
+		}
+
+		if (camera == 0) {
+			copy(markerLocations, markerLocations + 4, leftLastPositions);
+		} else {
+			copy(markerLocations, markerLocations + 4, rightLastPositions);
 		}
 
 		//circle(leftImg, maxLoc, maskRadius, Scalar(255, 255, 255), 1);
 
-		imshow("Contours", drawing);
-		imshow("Masked Image", maskedImg);
+		imshow("Result", drawing);
 	}
 }
