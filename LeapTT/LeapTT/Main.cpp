@@ -13,8 +13,7 @@ extern "C" {
 
 	int MASK_RADIUS = 20;
 
-	int leftLastPositions[4] = { -1, -1, -1, -1 };
-	int rightLastPositions[4] = { -1, -1, -1, -1 };
+	float lastPositions[2][4] = { { -1, -1, -1, -1 }, { -1, -1, -1, -1 } };
 
 	void __declspec(dllexport) ConvertByteToColor(unsigned char* img8uc1, unsigned char* img8uc3, int width, int height)
 	{
@@ -72,35 +71,58 @@ extern "C" {
 		imshow("Disparity", disp8);
 	}
 
+	void findMarkers(vector<Point2f> center, vector<float> radius, float markerLocations[], int camera)
+	{
+		// Return previous positions if no marker was found
+		if (0 == center.size()) {
+			for (int i = 0; i < 4; i++) {
+				markerLocations[i] = lastPositions[camera][i];
+			}
+			
+			return;
+		}
+
+		if (1 == center.size()) {
+			// TODO: Ermittle welcher der beiden punkte gefunden wurde --> welcher der vorherigen punkte ist näher
+			// TODO: Auch radius vergleichen
+			// TODO: Nimm den anderen Punkt von den vorherigen Punkten
+		}
+
+		if (2 == center.size()) {
+			markerLocations[0] = center[0].x;
+			markerLocations[1] = center[0].y;
+			markerLocations[2] = center[1].x;
+			markerLocations[3] = center[1].y;
+			return;
+		}
+
+		if (2 < center.size()) {
+			// TODO: Ermittle welcher Punkte am nähsten an den beiden vorherigen Punkten sind
+			// TODO: Auch Radius vergleichen
+			// TODO: Nimm diese beiden Punkte
+		}
+	}
+
 	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height, int camera)
 	{
 		Mat img(height, width, CV_8UC1, imgData);
 		imshow("Image", img);
 
-		//GaussianBlur(img, img, Size(3, 3), 0);
-		//imshow("Blurred Image", img);
-
-		//threshold(img, img, 150, 255, THRESH_TOZERO);
+		// Prefilter so that environment will not be recognized as marker when no marker is present
+		threshold(img, img, 125, 255, THRESH_TOZERO);
 
 		// Get brightest point in the picture = first marker
 		double minVal; double maxVal; Point minLoc; Point maxLoc;
 		minMaxLoc(img, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
-		threshold(img, img, maxVal - 30, 255, THRESH_BINARY);
+		threshold(img, img, maxVal - 25, 255, THRESH_BINARY);
 		imshow("Adaptive Threshold Image", img);
-
-		// Create circular mask around the first marker
-		//Mat mask = Mat::zeros(img.size(), CV_8UC1);
-		//circle(mask, maxLoc, MASK_RADIUS, Scalar(255, 255, 255), -1);
-		//Mat maskedImg = Mat::zeros(height, width, CV_8UC1);
-		//img.copyTo(maskedImg, mask); // input and output must not be the same!
-		//imshow("Masked Image", maskedImg);
 
 		// Get contours
 		vector<vector<Point>> contours;
 		vector<Vec4i> hierarchy;
 		findContours(img, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-		//get bounding circles of contours
+		// Get bounding circles of contours
 		vector<Point2f>center(contours.size());
 		vector<float>radius(contours.size());
 		Mat drawing = Mat::zeros(img.size(), CV_8UC3);
@@ -113,27 +135,17 @@ extern "C" {
 			circle(drawing, center[i], radius[i], color, 1);
 		}
 
-		if (contours.size() >= 2) {
-			markerLocations[0] = center[0].x;
-			markerLocations[1] = center[0].y;
-			markerLocations[2] = center[1].x;
-			markerLocations[3] = center[1].y;
-			LOG(INFO) << "0(" << leftLastPositions[0] << ", " << leftLastPositions[1] << ", " << leftLastPositions[2] << ", " << leftLastPositions[3] << ")";
-			LOG(INFO) << "1(" << rightLastPositions[0] << ", " << rightLastPositions[1] << ", " << rightLastPositions[2] << ", " << rightLastPositions[3] << ")";
-			LOG(INFO) << camera << "*(" << markerLocations[0] << ", " << markerLocations[1] << ", " << markerLocations[2] << ", " << markerLocations[3] << ")";
-		}
-		else {
-			LOG(INFO) << "(0)";
-		}
+		LOG(INFO) << camera << "(" << lastPositions[camera][0] << lastPositions[camera][1] << lastPositions[camera][2] << lastPositions[camera][3] << ")";
+		LOG(INFO) << camera << "*: " << center;
 
-		if (camera == 0) {
-			copy(markerLocations, markerLocations + 4, leftLastPositions);
-		} else {
-			copy(markerLocations, markerLocations + 4, rightLastPositions);
-		}
+		findMarkers(center, radius, markerLocations, camera);
 
-		//circle(leftImg, maxLoc, maskRadius, Scalar(255, 255, 255), 1);
+		//Save positions for next frame
+		for (int i = 0; i < 4; i++) {
+			lastPositions[camera][i] = markerLocations[i];
+		}
 
 		imshow("Result", drawing);
 	}
+
 }
