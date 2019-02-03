@@ -46,32 +46,6 @@ extern "C" {
 		memcpy(img1, raw + size, size);
 	}
 
-	void __declspec(dllexport) GetDepthMap(unsigned char* img0, unsigned char* img1, unsigned char* depthMap, int width, int height)
-	{
-		Mat leftImg(height, width, CV_8UC1, img0);
-		Mat rightImg(height, width, CV_8UC1, img1);
-
-		int sgbmWinSize = 15;
-
-		Ptr<StereoBM> sbm = StereoBM::create();
-		sbm->setNumDisparities(16);
-		sbm->setBlockSize(15);
-		/*sbm->setTextureThreshold(10);
-		sbm->setSpeckleWindowSize(100);
-		sbm->setSpeckleRange(32);
-		sbm->setMinDisparity(0);
-		sbm->setUniquenessRatio(0);*/
-
-		Mat disp, disp8;
-		sbm->compute(leftImg, rightImg, disp);
-		normalize(disp, disp8, 0, 255, NORM_MINMAX, CV_8UC1);
-		//memcpy(depthMap, disp8.data, disp8.total() * disp8.elemSize());
-
-		imshow("Image 1", leftImg);
-		imshow("Image 2", rightImg);
-		imshow("Disparity", disp8);
-	}
-
 	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height, int camera)
 	{
 		Mat img(height, width, CV_8UC1, imgData);
