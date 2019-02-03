@@ -7,18 +7,14 @@ using Leap.Unity;
 
 public class LeapToolTracking : LeapImageRetriever
 {
-
-    [DllImport("LeapTT", EntryPoint = "ConvertByteToColor")]
-    public static extern void ConvertByteToColor(byte[] raw, Color32[] img0, int width, int height);
+    [DllImport("LeapTT", EntryPoint = "GetLeapImages")]
+    public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int size);
 
     [DllImport("LeapTT", EntryPoint = "CropImage")]
     public static extern void CropImage(byte[] imgData, byte[] croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight);
 
-    [DllImport("LeapTT", EntryPoint = "GetLeapImages")]
-    public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int size);
-
-    [DllImport("LeapTT", EntryPoint = "GetDepthMap")]
-    public static extern void GetDepthMap(byte[] img0, byte[] img1, byte[] disp, int width, int height);
+    [DllImport("LeapTT", EntryPoint = "ConvertByteToColor")]
+    public static extern void ConvertByteToColor(byte[] raw, Color32[] img0, int width, int height);
 
     [DllImport("LeapTT", EntryPoint = "GetMarkerLocations")]
     public static extern void GetMarkerLocations(byte[] imgData, float[] markerLocations, int width, int height, int camera);
@@ -35,8 +31,10 @@ public class LeapToolTracking : LeapImageRetriever
     private static int WIDTH_WITH_OFFSET = TEX_WIDTH - 2 * COL_OFFSET;
     private static int HEIGHT_WITH_OFFSET = TEX_HEIGHT - 2 * ROW_OFFSET;
 
-    private static float DISTANCE_OF_CAMERAS = 3.75f;
-    private static float CAMERA_ANGLE = 140;
+    //private static float DISTANCE_OF_CAMERAS = 3.75f;
+    private static float DISTANCE_OF_CAMERAS = 4;
+    //private static float CAMERA_ANGLE = 140;
+    private static float CAMERA_ANGLE = 151.93f;
 
     private Texture2D leftCanvas, rightCanvas;
 
@@ -150,16 +148,14 @@ public class LeapToolTracking : LeapImageRetriever
         Vector3 marker1_pos = new Vector3(-x_1L + WIDTH_WITH_OFFSET / 2, distance1, -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET) / 10.0f;
         Vector3 marker2_pos = new Vector3(-x_2L + WIDTH_WITH_OFFSET / 2, distance2, -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET) / 10.0f;
 
+        Debug.Log(System.DateTime.Now + ": Marker1" + marker1_pos);
         marker1.transform.position = marker1_pos;
-        //marker1.transform.LookAt(marker2_pos);
-        //Quaternion m1_rot = marker1.transform.rotation;
-        //marker1.transform.rotation = new Quaternion(m1_rot.y, m1_rot.x, m1_rot.z, m1_rot.w);
+        Debug.Log(System.DateTime.Now + ": Marker2" + marker2_pos);
         marker2.transform.position = marker2_pos;
 
         leftCanvas.SetPixels32(undistortedLeftImgColors);
         leftCanvas.Apply();
         rightCanvas.SetPixels32(undistortedRightImgColors);
         rightCanvas.Apply();
-
     }
 }

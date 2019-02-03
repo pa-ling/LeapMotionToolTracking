@@ -16,17 +16,10 @@ extern "C" {
 
 	float prevPos[2][4] = { { -1, -1, -1, -1 }, { -1, -1, -1, -1 } };
 
-	void __declspec(dllexport) ConvertByteToColor(unsigned char* img8uc1, unsigned char* img8uc3, int width, int height)
+	void __declspec(dllexport) GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size)
 	{
-		Mat singleChannelImage(height, width, CV_8UC1, img8uc1);
-
-		// copy channel 0 from the first image to all channels of the second image
-		int from_to[] = { 0,0, 0,1, 0,2 };
-		Mat threeChannelImage(singleChannelImage.size(), CV_8UC3);
-		mixChannels(&singleChannelImage, 1, &threeChannelImage, 1, from_to, 3);
-		cvtColor(threeChannelImage, threeChannelImage, COLOR_RGB2RGBA);
-
-		memcpy(img8uc3, threeChannelImage.data, threeChannelImage.total() * threeChannelImage.elemSize());
+		memcpy(img0, raw, size);
+		memcpy(img1, raw + size, size);
 	}
 
 	void __declspec(dllexport) CropImage(unsigned char* imgData, unsigned char* croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight)
@@ -40,10 +33,17 @@ extern "C" {
 		memcpy(croppedImgData, croppedImage.data, croppedImage.total() * croppedImage.elemSize());
 	}
 
-	void __declspec(dllexport) GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size)
+	void __declspec(dllexport) ConvertByteToColor(unsigned char* img8uc1, unsigned char* img8uc3, int width, int height)
 	{
-		memcpy(img0, raw, size);
-		memcpy(img1, raw + size, size);
+		Mat singleChannelImage(height, width, CV_8UC1, img8uc1);
+
+		// copy channel 0 from the first image to all channels of the second image
+		int from_to[] = { 0,0, 0,1, 0,2 };
+		Mat threeChannelImage(singleChannelImage.size(), CV_8UC3);
+		mixChannels(&singleChannelImage, 1, &threeChannelImage, 1, from_to, 3);
+		cvtColor(threeChannelImage, threeChannelImage, COLOR_RGB2RGBA);
+
+		memcpy(img8uc3, threeChannelImage.data, threeChannelImage.total() * threeChannelImage.elemSize());
 	}
 
 	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height, int camera)

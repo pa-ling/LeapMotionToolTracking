@@ -36,6 +36,7 @@ void Util::findMarkers(vector<Point2f> center, vector<float> radius, float marke
 			markerLocations[3] = center[0].y;
 		}
 		// TODO: Compare radius too
+		// TODO: Instead of just delivering the old value, add the difference from existing new value to its old value to the other old value
 	}
 
 	if (2 == center.size()) {
