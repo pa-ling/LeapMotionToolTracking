@@ -27,7 +27,7 @@ namespace Test
 			candidates.push_back(Point2f(10, 1));
 			candidates.push_back(Point2f(1, 1));
 
-			int index = Util::findClosestPointInVector(point, candidates);
+			int index = Util::findMostLikelyPoint(point, candidates);
 			//_swprintf(message, L"" + index);
 			Assert::Fail(message);
 		}	

@@ -10,6 +10,6 @@ class Util
 public:
 	//Util();
 	//~Util();
-	static int findClosestPointInVector(Point2f point, vector<Point2f> candidates);
+	static int findMostLikelyPoint(Point2f point, vector<Point2f> candidates, vector<float> radiuses);
 	static void findMarkers(vector<Point2f> center, vector<float> radius, float markerLocations[], int camera, float prevPos[][4]);
 };
