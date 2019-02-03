@@ -10,6 +10,4 @@ extern "C"
 	__declspec(dllexport) void GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height, int camera);
 }
 
-//void findMarkers(std::vector<cv::Point2f> center, std::vector<float> radius, float markerLocations[], int camera);
-
 #endif
