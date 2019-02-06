@@ -4,6 +4,7 @@ extern "C" {
 #include <opencv2/opencv.hpp>
 #include "easylogging++.h"
 #include "Util.h"
+#include "Marker.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -14,7 +15,8 @@ extern "C" {
 
 	int MASK_RADIUS = 20;
 
-	float prevPos[2][4] = { { -1, -1, -1, -1 }, { -1, -1, -1, -1 } };
+	//float prevPos[2][4] = { { -1, -1, -1, -1 }, { -1, -1, -1, -1 } };
+	Marker prevData[2][2];
 
 	void __declspec(dllexport) GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size)
 	{
@@ -75,17 +77,22 @@ extern "C" {
 			circle(drawing, center[i], (int) radius[i], color, 1);
 		}
 
-		LOG(INFO) << camera << "(" << prevPos[camera][0] << ", " << prevPos[camera][1] << ", " << prevPos[camera][2] << ", " << prevPos[camera][3] << ")";
+		LOG(INFO) << camera << "(" << prevData[camera][0].getX() << ", " << prevData[camera][0].getY() << ", " << prevData[camera][1].getX() << ", " << prevData[camera][1].getY() << ")";
 		LOG(INFO) << camera << "*: " << center;
 
-		Util::findMarkers(center, radius, markerLocations, camera, prevPos);
+		Marker *newData = Util::findMarkers(center, radius, prevData[camera]);
+
+		markerLocations[0] = newData[0].getX();
+		markerLocations[1] = newData[0].getY();
+		markerLocations[2] = newData[1].getX();
+		markerLocations[3] = newData[1].getY();
+
 		circle(drawing, Point2f(markerLocations[0], markerLocations[1]), 2, Scalar(0, 255, 0), 2);
 		circle(drawing, Point2f(markerLocations[2], markerLocations[3]), 2, Scalar(0, 255, 0), 2);
 
 		//Save positions for next frame
-		for (int i = 0; i < 4; i++) {
-			prevPos[camera][i] = markerLocations[i];
-		}
+		prevData[camera][0] = newData[0];
+		prevData[camera][1] = newData[1];
 
 		imshow("Result", drawing);
 	}

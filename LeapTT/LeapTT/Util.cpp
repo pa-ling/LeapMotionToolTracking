@@ -8,54 +8,51 @@
 {
 }*/
 
-void Util::findMarkers(vector<Point2f> positions, vector<float> radiuses, float markerLocations[], int camera, float prevPos[][4])
+Marker* Util::findMarkers(vector<Point2f> positions, vector<float> radiuses, Marker prevData[])
 {
-	// Return previous positions if no marker was found
-	if (0 == positions.size()) {
-		for (int i = 0; i < 4; i++) {
-			markerLocations[i] = prevPos[camera][i];
-		}
-		return;
-	}
+	Marker newData[2];
 
-	// Match the given point to previous position and return one previous position additionally
-	if (1 == positions.size()) {
-		Point2f candidate = positions[0];
-		float euclidianDist0 = sqrt(pow(prevPos[camera][0] - candidate.x, 2) + pow(prevPos[camera][1] - candidate.y, 2));
-		float euclidianDist1 = sqrt(pow(prevPos[camera][2] - candidate.x, 2) + pow(prevPos[camera][3] - candidate.y, 2));
+	if (0 == positions.size())
+	{
+		// Return previous positions if no marker was found
+		newData[0] = Marker(prevData[0]);
+		newData[1] = Marker(prevData[1]);
+	} 
+	else
+	if (1 == positions.size())
+	{
+		// Match the given point to previous position and return one previous position additionally
+		Point2f position = positions[0];
+		float euclidianDist0 = sqrt(pow(prevData[0].getX() - position.x, 2) + pow(prevData[0].getY() - position.y, 2));
+		float euclidianDist1 = sqrt(pow(prevData[1].getX() - position.x, 2) + pow(prevData[1].getY() - position.y, 2));
 		if (euclidianDist0 < euclidianDist1) {
-			markerLocations[0] = positions[0].x;
-			markerLocations[1] = positions[0].y;
-			markerLocations[2] = prevPos[camera][2];
-			markerLocations[3] = prevPos[camera][3];
+			newData[0] = Marker(position.x, position.y, radiuses[0]);
+			newData[1] = Marker(prevData[1]);
 		}
 		else {
-			markerLocations[0] = prevPos[camera][0];
-			markerLocations[1] = prevPos[camera][1];
-			markerLocations[2] = positions[0].x;
-			markerLocations[3] = positions[0].y;
+			newData[0] = Marker(prevData[0]);
+			newData[1] = Marker(position.x, position.y, radiuses[0]);
 		}
 		// TODO: Instead of just delivering the old value, add the difference from existing new value to its old value to the other old value
 	}
-
-	if (2 == positions.size()) {
-		markerLocations[0] = positions[0].x;
-		markerLocations[1] = positions[0].y;
-		markerLocations[2] = positions[1].x;
-		markerLocations[3] = positions[1].y;
-		return;
+	else
+	if (2 == positions.size())
+	{
+		newData[0] = Marker(positions[0].x, positions[0].y, radiuses[0]);
+		newData[1] = Marker(positions[1].x, positions[1].y, radiuses[1]);
 	}
-
-	if (2 < positions.size()) {
-		int closestPoint0 = findMostLikelyPoint(Point2f(prevPos[camera][0], prevPos[camera][1]), positions, radiuses);
-		int closestPoint1 = findMostLikelyPoint(Point2f(prevPos[camera][2], prevPos[camera][3]), positions, radiuses);
-		markerLocations[0] = positions[closestPoint0].x;
-		markerLocations[1] = positions[closestPoint0].y;
-		markerLocations[2] = positions[closestPoint1].x;
-		markerLocations[3] = positions[closestPoint1].y;
+	else
+	if (2 < positions.size())
+	{
+		int closestPoint0 = findMostLikelyPoint(Point2f(prevData[0].getX(), prevData[0].getY()), positions, radiuses);
+		int closestPoint1 = findMostLikelyPoint(Point2f(prevData[1].getX(), prevData[1].getY()), positions, radiuses);
+		newData[0] = Marker(positions[closestPoint0].x, positions[closestPoint0].y, radiuses[closestPoint0]);
+		newData[1] = Marker(positions[closestPoint1].x, positions[closestPoint1].y, radiuses[closestPoint1]);
 		// TODO: Compare radius too
 		// TODO: What if both points are the same?
 	}
+
+	return newData;
 }
 
 int Util::findMostLikelyPoint(Point2f point, vector<Point2f> positions, vector<float> radiuses) {
