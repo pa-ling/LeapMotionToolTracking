@@ -3,7 +3,7 @@ extern "C" {
 }
 #include <opencv2/opencv.hpp>
 #include "easylogging++.h"
-#include "Util.h"
+#include "Locator.h"
 #include "Marker.h"
 
 INITIALIZE_EASYLOGGINGPP
@@ -86,7 +86,7 @@ extern "C" {
 			<< prevData[camera][1].getR() << ")";
 		LOG(INFO) << camera << "*: " << center;
 
-		Marker *newData = Util::findMarkers(center, radius, prevData[camera]);
+		Marker *newData = Locator::findMarkers(center, radius, prevData[camera]);
 
 		markerLocations[0] = newData[0].getX();
 		markerLocations[1] = newData[0].getY();
