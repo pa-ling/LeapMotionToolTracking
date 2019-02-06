@@ -77,7 +77,13 @@ extern "C" {
 			circle(drawing, center[i], (int) radius[i], color, 1);
 		}
 
-		LOG(INFO) << camera << "(" << prevData[camera][0].getX() << ", " << prevData[camera][0].getY() << ", " << prevData[camera][1].getX() << ", " << prevData[camera][1].getY() << ")";
+		LOG(INFO) << camera << "(x0:" 
+			<< prevData[camera][0].getX() << ", y0:"
+			<< prevData[camera][0].getY() << ", r0:"
+			<< prevData[camera][0].getR() << ", x1:"
+			<< prevData[camera][1].getX() << ", y1:"
+			<< prevData[camera][1].getY() << ", r1:"
+			<< prevData[camera][1].getR() << ")";
 		LOG(INFO) << camera << "*: " << center;
 
 		Marker *newData = Util::findMarkers(center, radius, prevData[camera]);
