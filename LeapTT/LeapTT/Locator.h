@@ -6,11 +6,11 @@
 using namespace std;
 using namespace cv;
 
-class Util
+class Locator
 {
 public:
-	//Util();
-	//~Util();
+	//Locator();
+	//~Locator();
 	static Marker* findMarkers(vector<Point2f> center, vector<float> radius, Marker prevData[]);
 	static int findMostLikelyPoint(Point2f point, vector<Point2f> candidates, vector<float> radiuses);
 };

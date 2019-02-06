@@ -1,14 +1,14 @@
-#include "Util.h"
+#include "Locator.h"
 
-/*Util::Util()
+/*Locator::Locator()
 {
 }*/
 
-/*Util::~Util()
+/*Locator::~Locator()
 {
 }*/
 
-Marker* Util::findMarkers(vector<Point2f> positions, vector<float> radiuses, Marker prevData[])
+Marker* Locator::findMarkers(vector<Point2f> positions, vector<float> radiuses, Marker prevData[])
 {
 	Marker newData[2];
 
@@ -55,7 +55,7 @@ Marker* Util::findMarkers(vector<Point2f> positions, vector<float> radiuses, Mar
 	return newData;
 }
 
-int Util::findMostLikelyPoint(Point2f point, vector<Point2f> positions, vector<float> radiuses) {
+int Locator::findMostLikelyPoint(Point2f point, vector<Point2f> positions, vector<float> radiuses) {
 	float minDist = 0;
 	int nearestPointIndex = 0;
 	for (int i = 0; i < positions.size(); i++) {
