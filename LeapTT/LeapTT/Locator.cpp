@@ -10,7 +10,7 @@
 
 Marker* Locator::findMarkers(vector<Point2f> positions, vector<float> radiuses, Marker prevData[])
 {
-	Marker newData[2];
+	Marker* newData = new Marker[2];
 
 	if (0 == positions.size())
 	{

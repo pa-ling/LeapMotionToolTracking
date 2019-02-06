@@ -9,12 +9,16 @@ Marker::Marker(float x , float y, float r)
 
 Marker::Marker()
 {
-	Marker(-1.0, -1.0, -1.0);
+	this->x = -1.0;
+	this->y = -1.0;
+	this->r = -1.0;
 }
 
 Marker::Marker(const Marker &marker)
 {
-	Marker(marker.x, marker.y, marker.r);
+	this->x = marker.x;
+	this->y = marker.y;
+	this->r = marker.r;
 }
 
 Marker::~Marker()

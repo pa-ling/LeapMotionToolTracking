@@ -15,7 +15,6 @@ extern "C" {
 
 	int MASK_RADIUS = 20;
 
-	//float prevPos[2][4] = { { -1, -1, -1, -1 }, { -1, -1, -1, -1 } };
 	Marker prevData[2][2];
 
 	void __declspec(dllexport) GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size)
@@ -99,6 +98,7 @@ extern "C" {
 		//Save positions for next frame
 		prevData[camera][0] = newData[0];
 		prevData[camera][1] = newData[1];
+		delete [] newData;
 
 		imshow("Result", drawing);
 	}

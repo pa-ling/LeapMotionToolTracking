@@ -2,7 +2,6 @@
 #include "CppUnitTest.h"
 #include <opencv2/opencv.hpp>
 #include "..\LeapTT\Main.h"
-#include "..\LeapTT\Util.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
