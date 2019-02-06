@@ -44,27 +44,28 @@ Marker* Locator::findMarkers(vector<Point2f> positions, vector<float> radiuses, 
 	else
 	if (2 < positions.size())
 	{
-		int closestPoint0 = findMostLikelyPoint(Point2f(prevData[0].getX(), prevData[0].getY()), positions, radiuses);
-		int closestPoint1 = findMostLikelyPoint(Point2f(prevData[1].getX(), prevData[1].getY()), positions, radiuses);
+		int closestPoint0 = findMostLikelyPoint(Point2f(prevData[0].getX(), prevData[0].getY()), prevData[0].getR(), positions, radiuses);
+		int closestPoint1 = findMostLikelyPoint(Point2f(prevData[1].getX(), prevData[1].getY()), prevData[1].getR(), positions, radiuses);
 		newData[0] = Marker(positions[closestPoint0].x, positions[closestPoint0].y, radiuses[closestPoint0]);
 		newData[1] = Marker(positions[closestPoint1].x, positions[closestPoint1].y, radiuses[closestPoint1]);
-		// TODO: Compare radius too
 		// TODO: What if both points are the same?
 	}
 
 	return newData;
 }
 
-int Locator::findMostLikelyPoint(Point2f point, vector<Point2f> positions, vector<float> radiuses) {
-	float minDist = 0;
-	int nearestPointIndex = 0;
+int Locator::findMostLikelyPoint(Point2f point, float radius, vector<Point2f> positions, vector<float> radiuses) {
+	float minScore = 0;
+	int mostLikelyPointIndex = 0;
 	for (int i = 0; i < positions.size(); i++) {
 		Point2f position = positions[i];
 		float euclidianDist = sqrt(pow(point.x - position.x, 2) + pow(point.y - position.y, 2));
-		if (euclidianDist < minDist) {
-			minDist = euclidianDist;
-			nearestPointIndex = i;
+		float radiusDifference = abs(radiuses[i] - radius);
+		float score = euclidianDist * POSITION_MODIFIER + radiusDifference * RADIUS_MODIFIER;
+		if (score < minScore) {
+			minScore = score;
+			mostLikelyPointIndex = i;
 		}
 	}
-	return nearestPointIndex;
+	return mostLikelyPointIndex;
 }
