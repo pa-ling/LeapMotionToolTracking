@@ -21,6 +21,13 @@ Marker::Marker(const Marker &marker)
 	this->r = marker.r;
 }
 
+Marker::Marker(cv::Point2f p, float r)
+{
+	this->x = p.x;
+	this->y = p.y;
+	this->r = r;
+}
+
 Marker::~Marker()
 {
 	//nothing to do

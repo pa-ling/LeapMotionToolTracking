@@ -1,5 +1,7 @@
 #pragma once
 
+#include <opencv2/opencv.hpp>
+
 class Marker
 {
 	float x;
@@ -9,6 +11,7 @@ public:
 	Marker(float x, float y, float r);
 	Marker();
 	Marker(const Marker &marker);
+	Marker(cv::Point2f p, float r);
 	~Marker();
 	float getX();
 	void setX(float x);

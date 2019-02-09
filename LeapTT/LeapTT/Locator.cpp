@@ -26,17 +26,18 @@ Marker* Locator::findMarkers(vector<Point2f> positions, vector<float> radiuses, 
 	{
 		// Match the given point to previous position and return one previous position additionally
 		Point2f position = positions[0];
-		float dist0 = getEuclidianDistance(Point2f(prevData[0].getX(), prevData[0].getY()), position);
-		float dist1 = getEuclidianDistance(Point2f(prevData[1].getX(), prevData[1].getY()), position);
+		Point2f point0 = Point2f(prevData[0].getX(), prevData[0].getY());
+		Point2f point1 = Point2f(prevData[1].getX(), prevData[1].getY());
+		float dist0 = getEuclidianDistance(point0, position);
+		float dist1 = getEuclidianDistance(point1, position);
 		if (dist0 < dist1) {
 			newData[0] = Marker(position.x, position.y, radiuses[0]);
-			newData[1] = Marker(prevData[1]);
+			newData[1] = Marker(point1 + position - point0, prevData[1].getR());
 		}
 		else {
-			newData[0] = Marker(prevData[0]);
+			newData[0] = Marker(point0 + position - point0, prevData[0].getR());
 			newData[1] = Marker(position.x, position.y, radiuses[0]);
 		}
-		// TODO: Instead of just delivering the old value, add the difference from existing new value to its old value to the other old value
 	}
 	else
 	if (2 == positions.size())
