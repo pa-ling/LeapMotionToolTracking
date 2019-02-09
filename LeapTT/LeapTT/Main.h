@@ -1,5 +1,4 @@
-#ifndef TESTDLLSORT_H
-#define TESTDLLSORT_H
+#pragma once
 
 extern "C"
 {
@@ -8,5 +7,3 @@ extern "C"
 	__declspec(dllexport) void ConvertByteToColor(unsigned char* img8uc1, unsigned char* img8uc3, int width, int height);
 	__declspec(dllexport) void GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height, int camera);
 }
-
-#endif
