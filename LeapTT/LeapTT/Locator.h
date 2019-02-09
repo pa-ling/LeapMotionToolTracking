@@ -3,9 +3,6 @@
 #include <opencv2/opencv.hpp>
 #include "Marker.h"
 
-using namespace std;
-using namespace cv;
-
 class Locator
 {
 	static const int POSITION_MODIFIER = 50;
@@ -13,6 +10,6 @@ class Locator
 public:
 	//Locator();
 	//~Locator();
-	static Marker* findMarkers(vector<Point2f> center, vector<float> radius, Marker prevData[]);
-	static int Locator::findMostLikelyPoint(Point2f point, float radius, vector<Point2f> positions, vector<float> radiuses);
+	static Marker* findMarkers(std::vector<cv::Point2f> center, std::vector<float> radius, Marker prevData[]);
+	static int Locator::findMostLikelyPoint(cv::Point2f point, float radius, std::vector<cv::Point2f> positions, std::vector<float> radiuses);
 };

@@ -1,5 +1,8 @@
 #include "Locator.h"
 
+using namespace std;
+using namespace cv;
+
 /*Locator::Locator()
 {
 }*/
