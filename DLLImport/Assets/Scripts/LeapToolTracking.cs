@@ -25,27 +25,13 @@ public class LeapToolTracking : LeapImageRetriever
     private static int TEX_WIDTH = 400;
     private static int TEX_HEIGHT = 400;
     private static int MAX_FOV = 8;
-
     private static int ROW_OFFSET = 100;
     private static int COL_OFFSET = 60;
     private static int WIDTH_WITH_OFFSET = TEX_WIDTH - 2 * COL_OFFSET;
     private static int HEIGHT_WITH_OFFSET = TEX_HEIGHT - 2 * ROW_OFFSET;
 
-    //private static float DISTANCE_OF_CAMERAS = 3.75f;
     private static float DISTANCE_OF_CAMERAS = 4;
-    //private static float CAMERA_ANGLE = 140;
     private static float CAMERA_ANGLE = 151.93f;
-
-    private Texture2D leftCanvas, rightCanvas;
-
-    private void Start()
-    {
-        leftCanvas = new Texture2D(WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
-        GameObject.Find("DisplayCamera0").GetComponentInChildren<MeshRenderer>().material.mainTexture = leftCanvas;
-
-        rightCanvas = new Texture2D(WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET);
-        GameObject.Find("DisplayCamera1").GetComponentInChildren<MeshRenderer>().material.mainTexture = rightCanvas;
-    }
 
     private void OnPreRender()
     {
@@ -55,6 +41,7 @@ public class LeapToolTracking : LeapImageRetriever
         }
 
         int imageSize = _currentImage.Width * _currentImage.Height;
+        Debug.Log("width: " + _currentImage.Width + ", height:" + _currentImage.Height);
         byte[] raw = _currentImage.Data(Leap.Image.CameraType.LEFT);
         byte[] leftImgData = new byte[imageSize];
         byte[] rightImgData = new byte[imageSize];
@@ -72,8 +59,8 @@ public class LeapToolTracking : LeapImageRetriever
                 input.y = row / TEX_HEIGHT;
 
                 //Convert from normalized [0..1] to ray slopes
-                input.x = (input.x - (float).5) * MAX_FOV;
-                input.y = (input.y - (float).5) * MAX_FOV;
+                input.x = (input.x - 0.5f) * MAX_FOV;
+                input.y = (input.y - 0.5f) * MAX_FOV;
 
                 int dindex = (int)Mathf.Floor(row * TEX_WIDTH + col);
 
@@ -143,19 +130,13 @@ public class LeapToolTracking : LeapImageRetriever
         float x_2R = rightMarkerLocations[2];
         float distance1 = (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (x_1L - x_1R));
         float distance2 = (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (x_2L - x_2R));
-        //Debug.Log("(" + x_1L + ", " + leftMarkerLocations[1] + ", " + distance1 + ")");
 
-        Vector3 marker1_pos = new Vector3(-x_1L + WIDTH_WITH_OFFSET / 2, distance1, -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET) / 10.0f;
-        Vector3 marker2_pos = new Vector3(-x_2L + WIDTH_WITH_OFFSET / 2, distance2, -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET) / 10.0f;
+        Vector3 marker1_pos = new Vector3(-x_1L + WIDTH_WITH_OFFSET / 2, distance1, -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
+        Vector3 marker2_pos = new Vector3(-x_2L + WIDTH_WITH_OFFSET / 2, distance2, -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
 
         Debug.Log(System.DateTime.Now + ": Marker1" + marker1_pos);
         marker1.transform.position = marker1_pos;
         Debug.Log(System.DateTime.Now + ": Marker2" + marker2_pos);
         marker2.transform.position = marker2_pos;
-
-        leftCanvas.SetPixels32(undistortedLeftImgColors);
-        leftCanvas.Apply();
-        rightCanvas.SetPixels32(undistortedRightImgColors);
-        rightCanvas.Apply();
     }
 }

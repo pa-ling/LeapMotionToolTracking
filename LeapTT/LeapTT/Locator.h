@@ -5,8 +5,8 @@
 
 class Locator
 {
-	static const int POSITION_MODIFIER = 50;
-	static const int RADIUS_MODIFIER = 50;
+	static const int POSITION_MODIFIER = 70;
+	static const int RADIUS_MODIFIER = 30;
 	static float getEuclidianDistance(cv::Point2f a, cv::Point2f b);
 public:
 	//Locator();
