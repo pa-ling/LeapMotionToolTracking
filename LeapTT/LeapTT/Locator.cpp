@@ -55,7 +55,7 @@ Marker* Locator::findMarkers(vector<Point2f> positions, vector<float> radiuses, 
 }
 
 int Locator::findMostLikelyPoint(Point2f point, float radius, vector<Point2f> positions, vector<float> radiuses) {
-	float minScore = 0;
+	float minScore = numeric_limits<float>::max();
 	int mostLikelyPointIndex = 0;
 	for (int i = 0; i < positions.size(); i++) {
 		Point2f position = positions[i];

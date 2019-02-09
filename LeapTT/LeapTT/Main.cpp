@@ -50,7 +50,7 @@ extern "C" {
 	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height, int camera)
 	{
 		Mat img(height, width, CV_8UC1, imgData);
-		imshow("Image", img);
+		imshow("Image " + to_string(camera), img);
 
 		// Prefilter so that environment will not be recognized as marker when no marker is present
 		threshold(img, img, 125, 255, THRESH_TOZERO);
@@ -59,7 +59,7 @@ extern "C" {
 		double minVal; double maxVal; Point minLoc; Point maxLoc;
 		minMaxLoc(img, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
 		threshold(img, img, maxVal - 25, 255, THRESH_BINARY);
-		imshow("Adaptive Threshold Image", img);
+		imshow("Threshold " + to_string(camera), img);
 
 		// Get contours
 		vector<vector<Point>> contours;
@@ -100,7 +100,7 @@ extern "C" {
 		prevData[camera][1] = newData[1];
 		delete [] newData;
 
-		imshow("Result", drawing);
+		imshow("Result " + to_string(camera), drawing);
 	}
 
 }
