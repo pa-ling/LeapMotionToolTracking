@@ -72,12 +72,11 @@ public class LeapToolTracking : LeapImageRetriever
         Debug.Log(System.DateTime.Now + ": Left(" + leftMarkerLocations[0] + ", " + leftMarkerLocations[1] + ", " + leftMarkerLocations[2] + ", " + leftMarkerLocations[3] + ")");
         Debug.Log(System.DateTime.Now + ": Right(" + rightMarkerLocations[0] + ", " + rightMarkerLocations[1] + ", " + rightMarkerLocations[2] + ", " + rightMarkerLocations[3] + ")");
 
-        float x_1L = leftMarkerLocations[0], x_2L = leftMarkerLocations[2], x_1R = rightMarkerLocations[0], x_2R = rightMarkerLocations[2];
-        float distance1 = (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (x_1L - x_1R));
-        float distance2 = (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (x_2L - x_2R));
+        float dist0 = getDepth(leftMarkerLocations[0], rightMarkerLocations[0]);
+        float dist1 = getDepth(leftMarkerLocations[2], rightMarkerLocations[2]);
 
-        Vector3 marker1Pos = new Vector3(-x_1L + WIDTH_WITH_OFFSET / 2, distance1, -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
-        Vector3 marker2Pos = new Vector3(-x_2L + WIDTH_WITH_OFFSET / 2, distance2, -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
+        Vector3 marker1Pos = new Vector3(-leftMarkerLocations[0] + WIDTH_WITH_OFFSET / 2, dist0, -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
+        Vector3 marker2Pos = new Vector3(-leftMarkerLocations[2] + WIDTH_WITH_OFFSET / 2, dist1, -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
 
         Debug.Log(System.DateTime.Now + ": Marker1" + marker1Pos);
         Debug.Log(System.DateTime.Now + ": Marker2" + marker2Pos);
@@ -129,5 +128,10 @@ public class LeapToolTracking : LeapImageRetriever
                 }
             }
         }
+    }
+
+    private float getDepth(float xL, float xR)
+    {
+       return (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (xL - xR));
     }
 }
