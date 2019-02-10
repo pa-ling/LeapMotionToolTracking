@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 using Leap.Unity;
+using System.Collections.Generic;
 
 public class LeapToolTracking : LeapImageRetriever
 {
@@ -28,8 +29,18 @@ public class LeapToolTracking : LeapImageRetriever
     private const float DISTANCE_OF_CAMERAS = 4.0f;
     private const float CAMERA_ANGLE = 151.93f;
 
+    private const int VALUES_TO_KEEP = 5;
+    private Queue<Vector3> positions0;
+    private Queue<Vector3> positions1;
+
     public GameObject marker1;
     public GameObject marker2;
+
+    private void Start()
+    {
+        positions0 = new Queue<Vector3>();
+        positions1 = new Queue<Vector3>();
+    }
 
     private void OnPreRender()
     {
@@ -69,17 +80,23 @@ public class LeapToolTracking : LeapImageRetriever
         GetMarkerLocations(croppedUndistortedLeftImg, leftMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 0);
         GetMarkerLocations(croppedUndistortedRightImg, rightMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 1);
 
-        Debug.Log(System.DateTime.Now + ": Left(" + leftMarkerLocations[0] + ", " + leftMarkerLocations[1] + ", " + leftMarkerLocations[2] + ", " + leftMarkerLocations[3] + ")");
-        Debug.Log(System.DateTime.Now + ": Right(" + rightMarkerLocations[0] + ", " + rightMarkerLocations[1] + ", " + rightMarkerLocations[2] + ", " + rightMarkerLocations[3] + ")");
+        float x0 = -leftMarkerLocations[0] + WIDTH_WITH_OFFSET / 2;
+        float y0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]);
+        float z0 = -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100;
 
-        float dist0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]);
-        float dist1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]);
+        float x1 = -leftMarkerLocations[2] + WIDTH_WITH_OFFSET / 2;
+        float y1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]);
+        float z1 = -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100;
 
-        Vector3 marker0Pos = new Vector3(-leftMarkerLocations[0] + WIDTH_WITH_OFFSET / 2, dist0, -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
-        Vector3 marker1Pos = new Vector3(-leftMarkerLocations[2] + WIDTH_WITH_OFFSET / 2, dist1, -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
+        Vector3 marker0Pos = new Vector3(x0, y0, z0) / 10.0f;
+        Vector3 marker1Pos = new Vector3(x1, y1, z1) / 10.0f;
 
-        Debug.Log(System.DateTime.Now + ": Marker1" + marker0Pos);
-        Debug.Log(System.DateTime.Now + ": Marker2" + marker1Pos);
+        SaveVectorToQueue(marker0Pos, positions0);
+        SaveVectorToQueue(marker1Pos, positions1);
+
+        marker0Pos = FilterData(marker0Pos, positions0.ToArray());
+        marker1Pos = FilterData(marker1Pos, positions1.ToArray());
+
         marker1.transform.position = marker0Pos;
         marker2.transform.position = marker1Pos;
     }
@@ -135,8 +152,30 @@ public class LeapToolTracking : LeapImageRetriever
        return (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (xL - xR));
     }
 
-    private Vector3 FilterData(float x, float y, float z)
+    private void SaveVectorToQueue(Vector3 vector, Queue<Vector3> queue)
     {
-        return new Vector3();
+        if (queue.Count > VALUES_TO_KEEP)
+        {
+            queue.Dequeue();
+        }
+        queue.Enqueue(vector);
+    }
+
+    private Vector3 FilterData(Vector3 currentDatum, Vector3[] previousData)
+    {
+        float xA = currentDatum.x, yA = currentDatum.y, zA = currentDatum.z;
+        for (int i = 0; i < previousData.Length; i++)
+        {
+            Vector3 pos = previousData[i];
+            xA += pos.x;
+            yA += pos.y;
+            zA += pos.z;
+        }
+
+        xA = xA / (previousData.Length + 1);
+        yA = yA / (previousData.Length + 1);
+        zA = zA / (previousData.Length + 1);
+
+        return new Vector3(xA, yA, zA);
     }
 }
