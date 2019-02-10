@@ -55,8 +55,8 @@ public class LeapToolTracking : LeapImageRetriever
         byte[] leftImgData = new byte[imageSize], rightImgData = new byte[imageSize];
         GetLeapImages(raw, leftImgData, rightImgData, imageSize);
 
-        byte[] undistortedLeftImg = new byte[TEX_WIDTH * TEX_HEIGHT], undistortedRightImg = new byte[TEX_WIDTH * TEX_HEIGHT];
-        UndistortImages(leftImgData, rightImgData, undistortedLeftImg, undistortedRightImg);
+        byte[] undistortedLeftImg = UndistortImage(leftImgData, Leap.Image.CameraType.LEFT);
+        byte[] undistortedRightImg = UndistortImage(rightImgData, Leap.Image.CameraType.RIGHT);
 
         byte[] croppedUndistortedLeftImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET], croppedUndistortedRightImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET];
         CropImage(
@@ -101,8 +101,9 @@ public class LeapToolTracking : LeapImageRetriever
         marker2.transform.position = marker1Pos;
     }
 
-    private void UndistortImages(byte[] leftImgData, byte[] rightImgData, byte[] undistortedLeftImg, byte[] undistortedRightImg)
+    private byte[] UndistortImage(byte[] imgData, Leap.Image.CameraType type)
     {
+        byte[] undistortedImg = new byte[TEX_WIDTH * TEX_HEIGHT];
         for (float row = ROW_OFFSET; row < TEX_HEIGHT - ROW_OFFSET; row++)
         {
             for (float col = COL_OFFSET; col < TEX_WIDTH - COL_OFFSET; col++)
@@ -119,32 +120,20 @@ public class LeapToolTracking : LeapImageRetriever
                 int dindex = (int)Mathf.Floor(row * TEX_WIDTH + col);
 
                 //left image
-                Leap.Vector pixelLeft = _currentImage.RectilinearToPixel(Leap.Image.CameraType.LEFT, input);
-                int pindexLeft = (int)Mathf.Floor(pixelLeft.y) * _currentImage.Width + (int)Mathf.Floor(pixelLeft.x);
+                Leap.Vector pixel = _currentImage.RectilinearToPixel(type, input);
+                int pindex = (int)Mathf.Floor(pixel.y) * _currentImage.Width + (int)Mathf.Floor(pixel.x);
 
-                if (pixelLeft.x >= 0 && pixelLeft.x < _currentImage.Width && pixelLeft.y >= 0 && pixelLeft.y < _currentImage.Height)
+                if (pixel.x >= 0 && pixel.x < _currentImage.Width && pixel.y >= 0 && pixel.y < _currentImage.Height)
                 {
-                    undistortedLeftImg[dindex] = leftImgData[pindexLeft];
+                    undistortedImg[dindex] = imgData[pindex];
                 }
                 else
                 {
-                    undistortedLeftImg[dindex] = 0;
-                }
-
-                //right image
-                Leap.Vector pixelRight = _currentImage.RectilinearToPixel(Leap.Image.CameraType.RIGHT, input);
-                int pindexRight = (int)Mathf.Floor(pixelRight.y) * _currentImage.Width + (int)Mathf.Floor(pixelRight.x);
-
-                if (pixelRight.x >= 0 && pixelRight.x < _currentImage.Width && pixelRight.y >= 0 && pixelRight.y < _currentImage.Height)
-                {
-                    undistortedRightImg[dindex] = rightImgData[pindexRight];
-                }
-                else
-                {
-                    undistortedRightImg[dindex] = 0;
+                    undistortedImg[dindex] = 0;
                 }
             }
         }
+        return undistortedImg;
     }
 
     private float GetDepth(float xL, float xR)
