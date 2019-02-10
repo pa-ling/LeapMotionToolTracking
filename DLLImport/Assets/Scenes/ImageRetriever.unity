@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 533968700}
   - component: {fileID: 533968699}
   m_Layer: 0
-  m_Name: Marker1
+  m_Name: Marker0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -311,7 +311,7 @@ GameObject:
   - component: {fileID: 1793011735}
   - component: {fileID: 1793011734}
   m_Layer: 0
-  m_Name: Marker2
+  m_Name: Marker1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

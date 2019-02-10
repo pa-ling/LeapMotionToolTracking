@@ -72,16 +72,16 @@ public class LeapToolTracking : LeapImageRetriever
         Debug.Log(System.DateTime.Now + ": Left(" + leftMarkerLocations[0] + ", " + leftMarkerLocations[1] + ", " + leftMarkerLocations[2] + ", " + leftMarkerLocations[3] + ")");
         Debug.Log(System.DateTime.Now + ": Right(" + rightMarkerLocations[0] + ", " + rightMarkerLocations[1] + ", " + rightMarkerLocations[2] + ", " + rightMarkerLocations[3] + ")");
 
-        float dist0 = getDepth(leftMarkerLocations[0], rightMarkerLocations[0]);
-        float dist1 = getDepth(leftMarkerLocations[2], rightMarkerLocations[2]);
+        float dist0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]);
+        float dist1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]);
 
-        Vector3 marker1Pos = new Vector3(-leftMarkerLocations[0] + WIDTH_WITH_OFFSET / 2, dist0, -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
-        Vector3 marker2Pos = new Vector3(-leftMarkerLocations[2] + WIDTH_WITH_OFFSET / 2, dist1, -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
+        Vector3 marker0Pos = new Vector3(-leftMarkerLocations[0] + WIDTH_WITH_OFFSET / 2, dist0, -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
+        Vector3 marker1Pos = new Vector3(-leftMarkerLocations[2] + WIDTH_WITH_OFFSET / 2, dist1, -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100) / 10.0f;
 
-        Debug.Log(System.DateTime.Now + ": Marker1" + marker1Pos);
-        Debug.Log(System.DateTime.Now + ": Marker2" + marker2Pos);
-        marker1.transform.position = marker1Pos;
-        marker2.transform.position = marker2Pos;
+        Debug.Log(System.DateTime.Now + ": Marker1" + marker0Pos);
+        Debug.Log(System.DateTime.Now + ": Marker2" + marker1Pos);
+        marker1.transform.position = marker0Pos;
+        marker2.transform.position = marker1Pos;
     }
 
     private void UndistortImages(byte[] leftImgData, byte[] rightImgData, byte[] undistortedLeftImg, byte[] undistortedRightImg)
@@ -130,8 +130,13 @@ public class LeapToolTracking : LeapImageRetriever
         }
     }
 
-    private float getDepth(float xL, float xR)
+    private float GetDepth(float xL, float xR)
     {
        return (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (xL - xR));
+    }
+
+    private Vector3 FilterData(float x, float y, float z)
+    {
+        return new Vector3();
     }
 }
