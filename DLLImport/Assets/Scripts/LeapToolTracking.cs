@@ -30,16 +30,21 @@ public class LeapToolTracking : LeapImageRetriever
     private const float CAMERA_ANGLE = 151.93f;
 
     private const int VALUES_TO_KEEP = 5;
-    private Queue<Vector3> positions0;
-    private Queue<Vector3> positions1;
+
+    private Queue<Vector3>[] positions;
+    private Queue<Vector3>[] filteredPositions;
 
     public GameObject marker0;
     public GameObject marker1;
 
     private void Start()
     {
-        positions0 = new Queue<Vector3>();
-        positions1 = new Queue<Vector3>();
+        positions = new Queue<Vector3>[2];
+        filteredPositions = new Queue<Vector3>[2];
+        positions[0] = new Queue<Vector3>();
+        positions[1] = new Queue<Vector3>();
+        filteredPositions[0] = new Queue<Vector3>();
+        filteredPositions[1] = new Queue<Vector3>();
     }
 
     private void OnPreRender()
@@ -88,8 +93,7 @@ public class LeapToolTracking : LeapImageRetriever
         float y0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]);
         float z0 = -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100;
         Vector3 marker0Pos = new Vector3(x0, y0, z0) / 10.0f;
-        SaveVectorToQueue(marker0Pos, positions0);
-        marker0Pos = FilterData(marker0Pos, positions0.ToArray());
+        marker0Pos = FilterData(marker0Pos, 0);
         marker0.transform.position = marker0Pos;
 
         // Marker 1
@@ -97,8 +101,7 @@ public class LeapToolTracking : LeapImageRetriever
         float y1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]);
         float z1 = -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100;
         Vector3 marker1Pos = new Vector3(x1, y1, z1) / 10.0f;
-        SaveVectorToQueue(marker1Pos, positions1);
-        marker1Pos = FilterData(marker1Pos, positions1.ToArray());
+        marker1Pos = FilterData(marker1Pos, 1);
         marker1.transform.position = marker1Pos;
     }
 
@@ -151,7 +154,17 @@ public class LeapToolTracking : LeapImageRetriever
         queue.Enqueue(vector);
     }
 
-    private Vector3 FilterData(Vector3 currentDatum, Vector3[] previousData)
+    private Vector3 FilterData(Vector3 currentDatum, int marker)
+    {
+        Vector3 MA1 = MovingAverage(currentDatum, positions[marker].ToArray());
+        SaveVectorToQueue(currentDatum, positions[marker]);
+        Vector3 MA2 = MovingAverage(currentDatum, filteredPositions[marker].ToArray());
+        SaveVectorToQueue(MA1, filteredPositions[marker]);
+
+        return 2 * MA1 - MA2;
+    }
+
+    private Vector3 MovingAverage(Vector3 currentDatum, Vector3[] previousData)
     {
         float xA = currentDatum.x, yA = currentDatum.y, zA = currentDatum.z;
         for (int i = 0; i < previousData.Length; i++)
