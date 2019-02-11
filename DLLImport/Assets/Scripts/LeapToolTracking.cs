@@ -33,8 +33,8 @@ public class LeapToolTracking : LeapImageRetriever
     private Queue<Vector3> positions0;
     private Queue<Vector3> positions1;
 
+    public GameObject marker0;
     public GameObject marker1;
-    public GameObject marker2;
 
     private void Start()
     {
@@ -55,10 +55,9 @@ public class LeapToolTracking : LeapImageRetriever
         byte[] leftImgData = new byte[imageSize], rightImgData = new byte[imageSize];
         GetLeapImages(raw, leftImgData, rightImgData, imageSize);
 
+        // Left image
         byte[] undistortedLeftImg = UndistortImage(leftImgData, Leap.Image.CameraType.LEFT);
-        byte[] undistortedRightImg = UndistortImage(rightImgData, Leap.Image.CameraType.RIGHT);
-
-        byte[] croppedUndistortedLeftImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET], croppedUndistortedRightImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET];
+        byte[] croppedUndistortedLeftImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET];
         CropImage(
             undistortedLeftImg,
             croppedUndistortedLeftImg,
@@ -67,6 +66,12 @@ public class LeapToolTracking : LeapImageRetriever
             ROW_OFFSET,
             WIDTH_WITH_OFFSET,
             HEIGHT_WITH_OFFSET);
+        float[] leftMarkerLocations = new float[4];
+        GetMarkerLocations(croppedUndistortedLeftImg, leftMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 0);
+
+        // Right image
+        byte[] undistortedRightImg = UndistortImage(rightImgData, Leap.Image.CameraType.RIGHT);
+        byte[] croppedUndistortedRightImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET];
         CropImage(
             undistortedRightImg,
             croppedUndistortedRightImg,
@@ -75,30 +80,26 @@ public class LeapToolTracking : LeapImageRetriever
             ROW_OFFSET,
             WIDTH_WITH_OFFSET,
             HEIGHT_WITH_OFFSET);
-
-        float[] leftMarkerLocations = new float[4], rightMarkerLocations = new float[4];
-        GetMarkerLocations(croppedUndistortedLeftImg, leftMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 0);
+        float[] rightMarkerLocations = new float[4];
         GetMarkerLocations(croppedUndistortedRightImg, rightMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 1);
 
+        // Marker 0
         float x0 = -leftMarkerLocations[0] + WIDTH_WITH_OFFSET / 2;
         float y0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]);
         float z0 = -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100;
+        Vector3 marker0Pos = new Vector3(x0, y0, z0) / 10.0f;
+        SaveVectorToQueue(marker0Pos, positions0);
+        marker0Pos = FilterData(marker0Pos, positions0.ToArray());
+        marker0.transform.position = marker0Pos;
 
+        // Marker 1
         float x1 = -leftMarkerLocations[2] + WIDTH_WITH_OFFSET / 2;
         float y1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]);
         float z1 = -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100;
-
-        Vector3 marker0Pos = new Vector3(x0, y0, z0) / 10.0f;
         Vector3 marker1Pos = new Vector3(x1, y1, z1) / 10.0f;
-
-        SaveVectorToQueue(marker0Pos, positions0);
         SaveVectorToQueue(marker1Pos, positions1);
-
-        marker0Pos = FilterData(marker0Pos, positions0.ToArray());
         marker1Pos = FilterData(marker1Pos, positions1.ToArray());
-
-        marker1.transform.position = marker0Pos;
-        marker2.transform.position = marker1Pos;
+        marker1.transform.position = marker1Pos;
     }
 
     private byte[] UndistortImage(byte[] imgData, Leap.Image.CameraType type)
