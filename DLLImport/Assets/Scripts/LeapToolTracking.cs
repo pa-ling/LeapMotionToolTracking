@@ -31,8 +31,11 @@ public class LeapToolTracking : LeapImageRetriever
 
     private const int VALUES_TO_KEEP = 5;
 
+    private const float ACTUALITY_MODIFIER = 0.4f;
+
     private Queue<Vector3>[] positions;
     private Queue<Vector3>[] filteredPositions;
+    private Vector3[] previousFilteredPositions;
 
     public GameObject marker0;
     public GameObject marker1;
@@ -40,11 +43,16 @@ public class LeapToolTracking : LeapImageRetriever
     private void Start()
     {
         positions = new Queue<Vector3>[2];
-        filteredPositions = new Queue<Vector3>[2];
         positions[0] = new Queue<Vector3>();
         positions[1] = new Queue<Vector3>();
+
+        filteredPositions = new Queue<Vector3>[2];
         filteredPositions[0] = new Queue<Vector3>();
         filteredPositions[1] = new Queue<Vector3>();
+
+        previousFilteredPositions = new Vector3[2];
+        previousFilteredPositions[0] = Vector3.zero;
+        previousFilteredPositions[1] = Vector3.zero;
     }
 
     private void OnPreRender()
@@ -93,7 +101,8 @@ public class LeapToolTracking : LeapImageRetriever
         float y0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]);
         float z0 = -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100;
         Vector3 marker0Pos = new Vector3(x0, y0, z0) / 10.0f;
-        marker0Pos = FilterData(marker0Pos, 0);
+        //marker0Pos = DoubleMovingAverage(marker0Pos, 0);
+        marker0Pos = ExponentialMovingAverage(marker0Pos, 0);
         marker0.transform.position = marker0Pos;
 
         // Marker 1
@@ -101,7 +110,8 @@ public class LeapToolTracking : LeapImageRetriever
         float y1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]);
         float z1 = -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100;
         Vector3 marker1Pos = new Vector3(x1, y1, z1) / 10.0f;
-        marker1Pos = FilterData(marker1Pos, 1);
+        //marker1Pos = DoubleMovingAverage(marker1Pos, 1);
+        marker1Pos = ExponentialMovingAverage(marker1Pos, 1);
         marker1.transform.position = marker1Pos;
     }
 
@@ -154,7 +164,14 @@ public class LeapToolTracking : LeapImageRetriever
         queue.Enqueue(vector);
     }
 
-    private Vector3 FilterData(Vector3 currentDatum, int marker)
+    private Vector3 ExponentialMovingAverage(Vector3 vector, int marker)
+    {
+        Vector3 EMA = ACTUALITY_MODIFIER * vector + (1 - ACTUALITY_MODIFIER) * previousFilteredPositions[marker];
+        previousFilteredPositions[marker] = EMA;
+        return EMA;
+    }
+
+    private Vector3 DoubleMovingAverage(Vector3 currentDatum, int marker)
     {
         Vector3 MA1 = MovingAverage(currentDatum, positions[marker].ToArray());
         SaveVectorToQueue(currentDatum, positions[marker]);
