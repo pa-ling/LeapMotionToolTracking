@@ -31,8 +31,8 @@ public class LeapToolTracking : LeapImageRetriever
 
     private const int VALUES_TO_KEEP = 5;
 
-    private const float LEVEL_ACTUALITY_MODIFIER = 0.4f;
-    private const float TREND_ACTUALITY_MODIFIER = 0.5f;
+    private const float LEVEL_ACTUALITY_MODIFIER = 0.3f;
+    private const float TREND_ACTUALITY_MODIFIER = 0.3f;
 
     private Queue<Vector3>[] positions;
     private Queue<Vector3>[] filteredPositions;
@@ -104,9 +104,9 @@ public class LeapToolTracking : LeapImageRetriever
 
         // Marker 0
         float x0 = -leftMarkerLocations[0] + WIDTH_WITH_OFFSET / 2;
-        float y0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]);
+        float y0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]) / 2;
         float z0 = -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100;
-        Vector3 marker0Pos = new Vector3(x0, y0, z0) / 10.0f;
+        Vector3 marker0Pos = new Vector3(x0, y0, z0) / 5;
         //marker0Pos = DoubleMovingAverage(marker0Pos, 0);
         //marker0Pos = ExponentialMovingAverage(marker0Pos, 0);
         marker0Pos = HoltWinterDES(marker0Pos, 0);
@@ -114,9 +114,9 @@ public class LeapToolTracking : LeapImageRetriever
 
         // Marker 1
         float x1 = -leftMarkerLocations[2] + WIDTH_WITH_OFFSET / 2;
-        float y1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]);
+        float y1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]) / 2;
         float z1 = -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100;
-        Vector3 marker1Pos = new Vector3(x1, y1, z1) / 10.0f;
+        Vector3 marker1Pos = new Vector3(x1, y1, z1) / 5;
         //marker1Pos = DoubleMovingAverage(marker1Pos, 1);
        // marker1Pos = ExponentialMovingAverage(marker1Pos, 1);
         marker1Pos = HoltWinterDES(marker1Pos, 1);
