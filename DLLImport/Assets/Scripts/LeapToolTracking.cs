@@ -41,6 +41,7 @@ public class LeapToolTracking : LeapImageRetriever
 
     public GameObject marker0;
     public GameObject marker1;
+    public GameObject tool;
 
     private void Start()
     {
@@ -121,6 +122,9 @@ public class LeapToolTracking : LeapImageRetriever
        // marker1Pos = ExponentialMovingAverage(marker1Pos, 1);
         marker1Pos = HoltWinterDES(marker1Pos, 1);
         marker1.transform.position = marker1Pos;
+
+        tool.transform.position = marker0Pos;
+        tool.transform.LookAt(marker1Pos);
     }
 
     private byte[] UndistortImage(byte[] imgData, Leap.Image.CameraType type)
