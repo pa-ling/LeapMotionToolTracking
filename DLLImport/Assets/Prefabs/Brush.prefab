@@ -432,7 +432,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de2c50045681d7b4ca82932b7a11a622, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  strokePrefab: {fileID: 1630809305493272, guid: 0e890021e98a0444d81d4cf038b72e97,
+  strokePrefab: {fileID: 1630809305493272, guid: 11842eb0352f18f4d9deb92dd595c50d,
     type: 2}
   paintMode: 2
   brush: 0
