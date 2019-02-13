@@ -31,8 +31,8 @@ public class LeapToolTracking : LeapImageRetriever
 
     private const int VALUES_TO_KEEP = 5;
 
-    private const float LEVEL_ACTUALITY_MODIFIER = 0.3f;
-    private const float TREND_ACTUALITY_MODIFIER = 0.3f;
+    private const float LEVEL_ACTUALITY_MODIFIER = 0.2f;
+    private const float TREND_ACTUALITY_MODIFIER = 0.2f;
 
     private Vector3[] previousLevel;
     private Vector3[] previousTrend;
