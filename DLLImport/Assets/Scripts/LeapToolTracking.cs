@@ -40,6 +40,7 @@ public class LeapToolTracking : LeapImageRetriever
     public GameObject marker0;
     public GameObject marker1;
     public GameObject tool;
+    public bool filterData;
 
     private void Start()
     {
@@ -96,9 +97,12 @@ public class LeapToolTracking : LeapImageRetriever
         float x0 = -leftMarkerLocations[0] + WIDTH_WITH_OFFSET / 2;
         float y0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]) / 2;
         float z0 = -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100;
-        Vector3 marker0Pos = new Vector3(x0, y0, z0) / 5;
+        Vector3 marker0Pos = new Vector3(x0, y0, z0) / 10;
         Debug.Log(System.DateTime.Now + ": Marker0" + marker0Pos);
-        marker0Pos = HoltWinterDES(marker0Pos, 0);
+        if (filterData)
+        {
+            marker0Pos = HoltWinterDES(marker0Pos, 0);
+        }
         Debug.Log(System.DateTime.Now + ": Filtered Marker0" + marker0Pos);
         marker0.transform.position = marker0Pos;
 
@@ -106,9 +110,12 @@ public class LeapToolTracking : LeapImageRetriever
         float x1 = -leftMarkerLocations[2] + WIDTH_WITH_OFFSET / 2;
         float y1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]) / 2;
         float z1 = -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100;
-        Vector3 marker1Pos = new Vector3(x1, y1, z1) / 5;
+        Vector3 marker1Pos = new Vector3(x1, y1, z1) / 10;
         Debug.Log(System.DateTime.Now + ": Marker1" + marker1Pos);
-        marker1Pos = HoltWinterDES(marker1Pos, 1);
+        if (filterData)
+        {
+            marker1Pos = HoltWinterDES(marker1Pos, 1);
+        }
         Debug.Log(System.DateTime.Now + ": Filtered Marker1" + marker1Pos);
         marker1.transform.position = marker1Pos;
 

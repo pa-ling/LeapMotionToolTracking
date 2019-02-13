@@ -152,7 +152,8 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 54131902611657246, guid: 3459a33f918c28340906cbb09639ec98, type: 2}
   m_SourcePrefab: {fileID: 100100000, guid: 3459a33f918c28340906cbb09639ec98, type: 2}
   m_IsPrefabAsset: 0
 --- !u!1 &533968698
@@ -587,6 +588,7 @@ MonoBehaviour:
   marker0: {fileID: 533968698}
   marker1: {fileID: 1793011733}
   tool: {fileID: 847366438}
+  filterData: 1
 --- !u!114 &831525799
 MonoBehaviour:
   m_ObjectHideFlags: 0
