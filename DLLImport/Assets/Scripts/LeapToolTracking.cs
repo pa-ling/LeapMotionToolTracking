@@ -97,7 +97,9 @@ public class LeapToolTracking : LeapImageRetriever
         float y0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]) / 2;
         float z0 = -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100;
         Vector3 marker0Pos = new Vector3(x0, y0, z0) / 5;
+        Debug.Log(System.DateTime.Now + ": Marker0" + marker0Pos);
         marker0Pos = HoltWinterDES(marker0Pos, 0);
+        Debug.Log(System.DateTime.Now + ": Filtered Marker0" + marker0Pos);
         marker0.transform.position = marker0Pos;
 
         // Marker 1
@@ -105,7 +107,9 @@ public class LeapToolTracking : LeapImageRetriever
         float y1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]) / 2;
         float z1 = -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100;
         Vector3 marker1Pos = new Vector3(x1, y1, z1) / 5;
+        Debug.Log(System.DateTime.Now + ": Marker1" + marker1Pos);
         marker1Pos = HoltWinterDES(marker1Pos, 1);
+        Debug.Log(System.DateTime.Now + ": Filtered Marker1" + marker1Pos);
         marker1.transform.position = marker1Pos;
 
         tool.transform.position = marker0Pos;
@@ -163,11 +167,24 @@ public class LeapToolTracking : LeapImageRetriever
 
     private Vector3 HoltWinterDES(Vector3 input, int marker)
     {
+        if (! isValid(input))
+        {
+            return previousLevel[marker] + previousTrend[marker];
+        }
+
         Vector3 level = LEVEL_ACTUALITY_MODIFIER * input + (1 - LEVEL_ACTUALITY_MODIFIER) * (previousLevel[marker] + previousTrend[marker]);
         Vector3 trend = TREND_ACTUALITY_MODIFIER * (level - previousLevel[marker]) + (1 - TREND_ACTUALITY_MODIFIER) * previousTrend[marker];
         previousLevel[marker] = level;
         previousTrend[marker] = trend;
+
         return level + trend;
+    }
+
+    private bool isValid(Vector3 vector)
+    {
+        return 
+            !float.IsNaN(vector.x) && !float.IsNaN(vector.y) && !float.IsNaN(vector.z) &&
+            !float.IsInfinity(vector.x) && !float.IsInfinity(vector.y) && !float.IsInfinity(vector.z);
     }
 
 }
