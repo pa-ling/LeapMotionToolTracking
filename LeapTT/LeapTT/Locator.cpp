@@ -35,7 +35,7 @@ Marker* Locator::findMarkers(vector<Point2f> positions, vector<float> radiuses, 
 			newData[1] = Marker(point1 + position - point0, prevData[1].getR());
 		}
 		else {
-			newData[0] = Marker(point0 + position - point0, prevData[0].getR());
+			newData[0] = Marker(point0 + position - point1, prevData[0].getR());
 			newData[1] = Marker(position.x, position.y, radiuses[0]);
 		}
 	}
