@@ -166,7 +166,6 @@ GameObject:
   - component: {fileID: 533968702}
   - component: {fileID: 533968701}
   - component: {fileID: 533968700}
-  - component: {fileID: 533968699}
   m_Layer: 0
   m_Name: Marker0
   m_TagString: Untagged
@@ -174,18 +173,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!135 &533968699
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 533968698}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &533968700
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -827,7 +814,6 @@ GameObject:
   - component: {fileID: 1793011737}
   - component: {fileID: 1793011736}
   - component: {fileID: 1793011735}
-  - component: {fileID: 1793011734}
   m_Layer: 0
   m_Name: Marker1
   m_TagString: Untagged
@@ -835,18 +821,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!135 &1793011734
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1793011733}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1793011735
 MeshRenderer:
   m_ObjectHideFlags: 0
