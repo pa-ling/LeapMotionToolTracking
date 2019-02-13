@@ -34,8 +34,6 @@ public class LeapToolTracking : LeapImageRetriever
     private const float LEVEL_ACTUALITY_MODIFIER = 0.3f;
     private const float TREND_ACTUALITY_MODIFIER = 0.3f;
 
-    private Queue<Vector3>[] positions;
-    private Queue<Vector3>[] filteredPositions;
     private Vector3[] previousLevel;
     private Vector3[] previousTrend;
 
@@ -45,14 +43,6 @@ public class LeapToolTracking : LeapImageRetriever
 
     private void Start()
     {
-        positions = new Queue<Vector3>[2];
-        positions[0] = new Queue<Vector3>();
-        positions[1] = new Queue<Vector3>();
-
-        filteredPositions = new Queue<Vector3>[2];
-        filteredPositions[0] = new Queue<Vector3>();
-        filteredPositions[1] = new Queue<Vector3>();
-
         previousLevel = new Vector3[2];
         previousLevel[0] = Vector3.zero;
         previousLevel[1] = Vector3.zero;
@@ -66,7 +56,6 @@ public class LeapToolTracking : LeapImageRetriever
     {
         if (_currentImage == null)
         {
-            Debug.Log("No image data avaiable.");
             return;
         }
 
@@ -185,38 +174,4 @@ public class LeapToolTracking : LeapImageRetriever
         return level + trend;
     }
 
-    private Vector3 ExponentialMovingAverage(Vector3 vector, int marker)
-    {
-        Vector3 EMA = LEVEL_ACTUALITY_MODIFIER * vector + (1 - LEVEL_ACTUALITY_MODIFIER) * previousLevel[marker];
-        previousLevel[marker] = EMA;
-        return EMA;
-    }
-
-    private Vector3 DoubleMovingAverage(Vector3 currentDatum, int marker)
-    {
-        Vector3 MA1 = MovingAverage(currentDatum, positions[marker].ToArray());
-        SaveVectorToQueue(currentDatum, positions[marker]);
-        Vector3 MA2 = MovingAverage(currentDatum, filteredPositions[marker].ToArray());
-        SaveVectorToQueue(MA1, filteredPositions[marker]);
-
-        return 2 * MA1 - MA2;
-    }
-
-    private Vector3 MovingAverage(Vector3 currentDatum, Vector3[] previousData)
-    {
-        float xA = currentDatum.x, yA = currentDatum.y, zA = currentDatum.z;
-        for (int i = 0; i < previousData.Length; i++)
-        {
-            Vector3 pos = previousData[i];
-            xA += pos.x;
-            yA += pos.y;
-            zA += pos.z;
-        }
-
-        xA = xA / (previousData.Length + 1);
-        yA = yA / (previousData.Length + 1);
-        zA = zA / (previousData.Length + 1);
-
-        return new Vector3(xA, yA, zA);
-    }
 }
