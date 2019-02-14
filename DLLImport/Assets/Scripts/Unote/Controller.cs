@@ -114,7 +114,7 @@ namespace Unote {
 			if (this.state.isDrawing) {
 				this.timer.Start();
 			}
-            transform.root.GetChild(1).GetChild(1).GetComponent<ParticleSystem>().Play();
+            //transform.root.GetChild(1).GetChild(1).GetComponent<ParticleSystem>().Play();
         }
 
 		private void StopDrawing() {
@@ -122,7 +122,7 @@ namespace Unote {
 				this.state.isDrawing = false;
 				this.timer.Stop();
 			}
-            transform.root.GetChild(1).GetChild(1).GetComponent<ParticleSystem>().Clear();
+            //transform.root.GetChild(1).GetChild(1).GetComponent<ParticleSystem>().Clear();
         }
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -671,13 +671,13 @@ namespace Unote {
 				}
 
 				if (Input.GetMouseButton(0)     ||
-					Input.GetKey(KeyCode.Space) ||
+					//Input.GetKey(KeyCode.Space) ||
 					this.state.btn_0) {
 					this.Draw();
 				}
 
 				if (!Input.GetMouseButton(0)     &&
-					!Input.GetKey(KeyCode.Space) &&
+					//!Input.GetKey(KeyCode.Space) &&
 					!this.state.btn_0) {
 					this.StopDrawing();
 					if (this.cache.strokePoints.Count > 1) {
