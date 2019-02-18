@@ -93,30 +93,9 @@ public class LeapToolTracking : LeapImageRetriever
         float[] rightMarkerLocations = new float[4];
         GetMarkerLocations(croppedUndistortedRightImg, rightMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 1);
 
-        // Marker 0
-        float x0 = -leftMarkerLocations[0] + WIDTH_WITH_OFFSET / 2;
-        float y0 = GetDepth(leftMarkerLocations[0], rightMarkerLocations[0]) / 2;
-        float z0 = -leftMarkerLocations[1] + HEIGHT_WITH_OFFSET - 100;
-        Vector3 marker0Pos = new Vector3(x0, y0, z0) / 10;
-        //Debug.Log(System.DateTime.Now + ": Marker0" + marker0Pos);
-        if (filterData)
-        {
-            marker0Pos = HoltWinterDES(marker0Pos, 0);
-        }
-        //Debug.Log(System.DateTime.Now + ": Filtered Marker0" + marker0Pos);
+        Vector3 marker0Pos = GetMarkerPosition(leftMarkerLocations[0], rightMarkerLocations[0], leftMarkerLocations[1], 0);
+        Vector3 marker1Pos = GetMarkerPosition(leftMarkerLocations[2], rightMarkerLocations[2], leftMarkerLocations[3], 1);
         marker0.transform.localPosition = marker0Pos;
-
-        // Marker 1
-        float x1 = -leftMarkerLocations[2] + WIDTH_WITH_OFFSET / 2;
-        float y1 = GetDepth(leftMarkerLocations[2], rightMarkerLocations[2]) / 2;
-        float z1 = -leftMarkerLocations[3] + HEIGHT_WITH_OFFSET - 100;
-        Vector3 marker1Pos = new Vector3(x1, y1, z1) / 10;
-        //Debug.Log(System.DateTime.Now + ": Marker1" + marker1Pos);
-        if (filterData)
-        {
-            marker1Pos = HoltWinterDES(marker1Pos, 1);
-        }
-        //Debug.Log(System.DateTime.Now + ": Filtered Marker1" + marker1Pos);
         marker1.transform.localPosition = marker1Pos;
 
         tool.transform.localPosition = marker0Pos;
@@ -139,11 +118,10 @@ public class LeapToolTracking : LeapImageRetriever
                 input.x = (input.x - 0.5f) * MAX_FOV;
                 input.y = (input.y - 0.5f) * MAX_FOV;
 
-                int dindex = (int)Mathf.Floor(row * TEX_WIDTH + col);
-
-                //left image
+                
                 Leap.Vector pixel = _currentImage.RectilinearToPixel(type, input);
-                int pindex = (int)Mathf.Floor(pixel.y) * _currentImage.Width + (int)Mathf.Floor(pixel.x);
+                int dindex = (int) Mathf.Floor(row * TEX_WIDTH + col);
+                int pindex = (int) Mathf.Floor(pixel.y) * _currentImage.Width + (int) Mathf.Round(pixel.x);
 
                 if (pixel.x >= 0 && pixel.x < _currentImage.Width && pixel.y >= 0 && pixel.y < _currentImage.Height)
                 {
@@ -163,18 +141,24 @@ public class LeapToolTracking : LeapImageRetriever
        return (DISTANCE_OF_CAMERAS * WIDTH_WITH_OFFSET) / (float)(2 * Math.Tan(CAMERA_ANGLE / 2) * (xL - xR));
     }
 
-    private void SaveVectorToQueue(Vector3 vector, Queue<Vector3> queue)
+    private Vector3 GetMarkerPosition(float xL, float xR, float y, int marker)
     {
-        if (queue.Count > VALUES_TO_KEEP)
+        float y0 = GetDepth(xL, xR) / 2;
+        float x0 = (-xL + (WIDTH_WITH_OFFSET / 2)) * y0 / 100;
+        float z0 = (-y + (HEIGHT_WITH_OFFSET - 100)) * y0 / 100;
+        Vector3 markerPos = new Vector3(x0, y0, z0) / 10;
+        //Debug.Log(System.DateTime.Now + ": Marker0" + marker0Pos);
+        if (filterData)
         {
-            queue.Dequeue();
+            markerPos = HoltWinterDES(markerPos, marker);
         }
-        queue.Enqueue(vector);
+        //Debug.Log(System.DateTime.Now + ": Filtered Marker0" + marker0Pos);
+        return markerPos;
     }
 
     private Vector3 HoltWinterDES(Vector3 input, int marker)
     {
-        if (! isValid(input))
+        if (!IsValid(input))
         {
             return previousLevel[marker] + previousTrend[marker];
         }
@@ -187,11 +171,10 @@ public class LeapToolTracking : LeapImageRetriever
         return level + trend;
     }
 
-    private bool isValid(Vector3 vector)
+    private bool IsValid(Vector3 vector)
     {
         return 
             !float.IsNaN(vector.x) && !float.IsNaN(vector.y) && !float.IsNaN(vector.z) &&
             !float.IsInfinity(vector.x) && !float.IsInfinity(vector.y) && !float.IsInfinity(vector.z);
     }
-
 }
