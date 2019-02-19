@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 public class LeapToolTracking : LeapImageRetriever
 {
+    [DllImport("LeapTT", EntryPoint = "Init")]
+    public static extern void Init();
+
     [DllImport("LeapTT", EntryPoint = "GetLeapImages")]
     public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int size);
 
@@ -29,8 +32,6 @@ public class LeapToolTracking : LeapImageRetriever
     private const float DISTANCE_OF_CAMERAS = 4.0f;
     private const float CAMERA_ANGLE = 151.93f;
 
-    private const int VALUES_TO_KEEP = 5;
-
     private const float LEVEL_ACTUALITY_MODIFIER = 0.2f;
     private const float TREND_ACTUALITY_MODIFIER = 0.2f;
 
@@ -44,6 +45,7 @@ public class LeapToolTracking : LeapImageRetriever
 
     private void Start()
     {
+        Init();
         previousLevel = new Vector3[2];
         previousLevel[0] = Vector3.zero;
         previousLevel[1] = Vector3.zero;
@@ -93,6 +95,8 @@ public class LeapToolTracking : LeapImageRetriever
         float[] rightMarkerLocations = new float[4];
         GetMarkerLocations(croppedUndistortedRightImg, rightMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 1);
 
+        Debug.Log(System.DateTime.Now + ": RawMarkerL: (" + leftMarkerLocations[0] + "; " + leftMarkerLocations[1] + "); (" + leftMarkerLocations[2] + "; " + leftMarkerLocations[3] + ")");
+        Debug.Log(System.DateTime.Now + ": RawMarkerR: (" + rightMarkerLocations[0] + "; " + rightMarkerLocations[1] + "); (" + rightMarkerLocations[2] + "; " + rightMarkerLocations[3] + ")");
         Vector3 marker0Pos = GetMarkerPosition(leftMarkerLocations[0], rightMarkerLocations[0], leftMarkerLocations[1], 0);
         Vector3 marker1Pos = GetMarkerPosition(leftMarkerLocations[2], rightMarkerLocations[2], leftMarkerLocations[3], 1);
         marker0.transform.localPosition = marker0Pos;
@@ -147,12 +151,12 @@ public class LeapToolTracking : LeapImageRetriever
         float x0 = (-xL + (WIDTH_WITH_OFFSET / 2)) * y0 / 100;
         float z0 = (-y + (HEIGHT_WITH_OFFSET - 100)) * y0 / 100;
         Vector3 markerPos = new Vector3(x0, y0, z0) / 10;
-        //Debug.Log(System.DateTime.Now + ": Marker0" + marker0Pos);
+        //Debug.Log(System.DateTime.Now + ": Marker" + marker + ":" + markerPos);
         if (filterData)
         {
             markerPos = HoltWinterDES(markerPos, marker);
         }
-        //Debug.Log(System.DateTime.Now + ": Filtered Marker0" + marker0Pos);
+        //Debug.Log(System.DateTime.Now + ": Filtered Marker" + marker + ":" + markerPos);
         return markerPos;
     }
 
@@ -174,7 +178,7 @@ public class LeapToolTracking : LeapImageRetriever
     private bool IsValid(Vector3 vector)
     {
         return 
-            !float.IsNaN(vector.x) && !float.IsNaN(vector.y) && !float.IsNaN(vector.z) &&
-            !float.IsInfinity(vector.x) && !float.IsInfinity(vector.y) && !float.IsInfinity(vector.z);
+            !(float.IsNaN(vector.x) || float.IsNaN(vector.y) || float.IsNaN(vector.z) ||
+            float.IsInfinity(vector.x) || float.IsInfinity(vector.y) || float.IsInfinity(vector.z));
     }
 }

@@ -17,6 +17,15 @@ extern "C" {
 
 	Marker prevData[2][2];
 
+	void __declspec(dllexport) Init()
+	{
+		LOG(INFO) << "Initalizing LeapTT.";
+		prevData[0][0] = Marker();
+		prevData[0][1] = Marker();
+		prevData[1][0] = Marker();
+		prevData[1][1] = Marker();
+	}
+
 	void __declspec(dllexport) GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size)
 	{
 		memcpy(img0, raw, size);
@@ -61,6 +70,12 @@ extern "C" {
 		threshold(img, img, maxVal - 25, 255, THRESH_BINARY);
 		imshow("Threshold " + to_string(camera), img);
 
+		minMaxLoc(img, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
+		if (255 == minVal) {
+			Init();
+			return;
+		}
+
 		// Get contours
 		vector<vector<Point>> contours;
 		vector<Vec4i> hierarchy;
@@ -92,8 +107,8 @@ extern "C" {
 		markerLocations[2] = newData[1].getX();
 		markerLocations[3] = newData[1].getY();
 
-		circle(drawing, Point2f(markerLocations[0], markerLocations[1]), 2, Scalar(0, 255, 0), 2);
-		circle(drawing, Point2f(markerLocations[2], markerLocations[3]), 2, Scalar(0, 255, 0), 2);
+		circle(drawing, Point2f(markerLocations[0], markerLocations[1]), 2, Scalar(30, 147, 56), 2);
+		circle(drawing, Point2f(markerLocations[2], markerLocations[3]), 2, Scalar(255, 151, 0), 2);
 
 		//Save positions for next frame
 		prevData[camera][0] = newData[0];
