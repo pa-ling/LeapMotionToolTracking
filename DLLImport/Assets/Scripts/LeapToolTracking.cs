@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class LeapToolTracking : LeapImageRetriever
 {
     [DllImport("LeapTT", EntryPoint = "Init")]
-    public static extern void Init();
+    public static extern void Init(bool debug);
 
     [DllImport("LeapTT", EntryPoint = "GetLeapImages")]
     public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int size);
@@ -23,7 +23,7 @@ public class LeapToolTracking : LeapImageRetriever
 
     private const int TEX_WIDTH = 400;
     private const int TEX_HEIGHT = 400;
-    private const int MAX_FOV = 8;
+    private const int MAX_FOV = 8; // field of view of the leap motion peripheral
     private const int ROW_OFFSET = 100;
     private const int COL_OFFSET = 60;
     private const int WIDTH_WITH_OFFSET = TEX_WIDTH - 2 * COL_OFFSET;
@@ -45,7 +45,7 @@ public class LeapToolTracking : LeapImageRetriever
 
     private void Start()
     {
-        Init();
+        Init(true);
         previousLevel = new Vector3[2];
         previousLevel[0] = Vector3.zero;
         previousLevel[1] = Vector3.zero;
@@ -95,6 +95,7 @@ public class LeapToolTracking : LeapImageRetriever
         float[] rightMarkerLocations = new float[4];
         GetMarkerLocations(croppedUndistortedRightImg, rightMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 1);
 
+        // Sometimes Markers are not equally detected in both pictures. If this happens the left marker locations are swapped.
         if ((leftMarkerLocations[1] > leftMarkerLocations[3] && rightMarkerLocations[1] < rightMarkerLocations[3]) ||
             (leftMarkerLocations[1] < leftMarkerLocations[3] && rightMarkerLocations[1] > rightMarkerLocations[3]))
         {
