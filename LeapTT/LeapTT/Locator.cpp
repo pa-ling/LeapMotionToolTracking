@@ -40,19 +40,40 @@ Marker* Locator::findMarkers(vector<Point2f> positions, vector<float> radiuses, 
 		}
 	}
 	else
-	if (2 == positions.size())
+	if (2 <= positions.size())
 	{
-		newData[0] = Marker(positions[0].x, positions[0].y, radiuses[0]);
-		newData[1] = Marker(positions[1].x, positions[1].y, radiuses[1]);
-	}
-	else
-	if (2 < positions.size())
-	{
-		int closestPoint0 = findMostLikelyPoint(Point2f(prevData[0].getX(), prevData[0].getY()), prevData[0].getR(), positions, radiuses);
-		int closestPoint1 = findMostLikelyPoint(Point2f(prevData[1].getX(), prevData[1].getY()), prevData[1].getR(), positions, radiuses);
-		newData[0] = Marker(positions[closestPoint0].x, positions[closestPoint0].y, radiuses[closestPoint0]);
-		newData[1] = Marker(positions[closestPoint1].x, positions[closestPoint1].y, radiuses[closestPoint1]);
-		// TODO: What if both points are the same?
+		Point2f prevPos0 = Point2f(prevData[0].getX(), prevData[0].getY());
+		Point2f prevPos1 = Point2f(prevData[1].getX(), prevData[1].getY());
+
+		int closestPointIndex0 = findMostLikelyPoint(prevPos0, prevData[0].getR(), positions, radiuses);
+		int closestPointIndex1 = findMostLikelyPoint(prevPos1, prevData[1].getR(), positions, radiuses);
+
+		if (closestPointIndex0 != closestPointIndex1)
+		{
+			newData[0] = Marker(positions[closestPointIndex0].x, positions[closestPointIndex0].y, radiuses[closestPointIndex0]);
+			newData[1] = Marker(positions[closestPointIndex1].x, positions[closestPointIndex1].y, radiuses[closestPointIndex1]);
+		}
+		else //closestPointIndex0 == closestPointIndex1
+		{
+			float dist0 = getEuclidianDistance(prevPos0, positions[closestPointIndex0]);
+			float dist1 = getEuclidianDistance(prevPos1, positions[closestPointIndex1]);
+			if (dist0 <= dist1)
+			{
+				newData[0] = Marker(positions[closestPointIndex0].x, positions[closestPointIndex0].y, radiuses[closestPointIndex0]);
+
+				positions.erase(positions.begin() + closestPointIndex0);
+				closestPointIndex1 = findMostLikelyPoint(prevPos1, prevData[1].getR(), positions, radiuses);
+				newData[1] = Marker(positions[closestPointIndex1].x, positions[closestPointIndex1].y, radiuses[closestPointIndex1]);
+			}
+			else
+			{
+				newData[1] = Marker(positions[closestPointIndex1].x, positions[closestPointIndex1].y, radiuses[closestPointIndex1]);
+
+				positions.erase(positions.begin() + closestPointIndex0);
+				closestPointIndex0 = findMostLikelyPoint(prevPos0, prevData[0].getR(), positions, radiuses);
+				newData[0] = Marker(positions[closestPointIndex0].x, positions[closestPointIndex0].y, radiuses[closestPointIndex0]);
+			}
+		}
 	}
 
 	return newData;
