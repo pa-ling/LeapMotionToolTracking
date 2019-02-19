@@ -1,25 +1,28 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Networking;
 
-public class Movement : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     public Vector3 centralPoint = Vector3.zero;
     public float rotatingSpeed = 50;
-    public float movingSpeed = 0.5f;
-    public float minDistanceToZero = 0.1f;
-    public float maxDistanceToZero = 100;
+    public float movingSpeed = 20;
+    public float minDistanceToZero = 3;
+    public float maxDistanceToZero = 20;
 
     private const float MAX_VERTICAL_ROTATION = 90;
     private float verticalRotation = 10;
 
-    void Start()
+    void Update()
     {
-        transform.LookAt(centralPoint);
-        //transform.RotateAround(centralPoint, transform.right, 10);
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
+        handleMovement();
     }
 
-    void Update()
+    private void handleMovement()
     {
         float rotatingRange = rotatingSpeed * Time.deltaTime;
         float movingRange = movingSpeed * Time.deltaTime;
@@ -55,5 +58,11 @@ public class Movement : MonoBehaviour
             transform.RotateAround(centralPoint, -transform.right, rotatingRange);
             verticalRotation -= rotatingRange;
         }
+    }
+
+    public override void OnStartLocalPlayer()
+    {
+        //GetComponent<MeshRenderer>().material.color = Color.blue;
+        transform.Find("Head").GetComponent<MeshRenderer>().material.color = Color.blue;
     }
 }
