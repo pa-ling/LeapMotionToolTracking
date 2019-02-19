@@ -95,6 +95,17 @@ public class LeapToolTracking : LeapImageRetriever
         float[] rightMarkerLocations = new float[4];
         GetMarkerLocations(croppedUndistortedRightImg, rightMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 1);
 
+        if ((leftMarkerLocations[1] > leftMarkerLocations[3] && rightMarkerLocations[1] < rightMarkerLocations[3]) ||
+            (leftMarkerLocations[1] < leftMarkerLocations[3] && rightMarkerLocations[1] > rightMarkerLocations[3]))
+        {
+            float tempX = leftMarkerLocations[0];
+            float tempY = leftMarkerLocations[1];
+            leftMarkerLocations[0] = leftMarkerLocations[2];
+            leftMarkerLocations[1] = leftMarkerLocations[3];
+            leftMarkerLocations[2] = tempX;
+            leftMarkerLocations[3] = tempY;
+        }
+
         Debug.Log(System.DateTime.Now + ": RawMarkerL: (" + leftMarkerLocations[0] + "; " + leftMarkerLocations[1] + "); (" + leftMarkerLocations[2] + "; " + leftMarkerLocations[3] + ")");
         Debug.Log(System.DateTime.Now + ": RawMarkerR: (" + rightMarkerLocations[0] + "; " + rightMarkerLocations[1] + "); (" + rightMarkerLocations[2] + "; " + rightMarkerLocations[3] + ")");
         Vector3 marker0Pos = GetMarkerPosition(leftMarkerLocations[0], rightMarkerLocations[0], leftMarkerLocations[1], 0);

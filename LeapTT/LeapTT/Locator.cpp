@@ -57,7 +57,7 @@ Marker* Locator::findMarkers(vector<Point2f> positions, vector<float> radiuses, 
 		{
 			float dist0 = getEuclidianDistance(prevPos0, positions[closestPointIndex0]);
 			float dist1 = getEuclidianDistance(prevPos1, positions[closestPointIndex1]);
-			if (dist0 <= dist1)
+			if (dist0 < dist1)
 			{
 				newData[0] = Marker(positions[closestPointIndex0].x, positions[closestPointIndex0].y, radiuses[closestPointIndex0]);
 
