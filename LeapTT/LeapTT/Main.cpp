@@ -62,20 +62,21 @@ extern "C" {
 	void __declspec(dllexport) GetMarkerLocations(unsigned char* imgData, float markerLocations[], int width, int height, int camera)
 	{
 		Mat img(height, width, CV_8UC1, imgData);
+		Mat iThreshImg = Mat(img.size(), CV_8UC3);
+		Mat aThreshImg = Mat(img.size(), CV_8UC3);
 
 		// Prefilter so that environment will not be recognized as marker when no marker is present
-		threshold(img, img, 125, 255, THRESH_TOZERO);
+		threshold(img, iThreshImg, 125, 255, THRESH_TOZERO);
 
 		// Get brightest point in the picture = first marker
 		double minVal; double maxVal; Point minLoc; Point maxLoc;
-		minMaxLoc(img, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
+		minMaxLoc(iThreshImg, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
 
 		// limit brightness range where both markers are located
-		Mat threshImg = Mat::zeros(img.size(), CV_8UC3);
-		threshold(img, threshImg, maxVal - 25, 255, THRESH_BINARY);
+		threshold(iThreshImg, aThreshImg, maxVal - 25, 255, THRESH_BINARY);
 
 		// check if markers are visible (white threshold image)
-		minMaxLoc(threshImg, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
+		minMaxLoc(aThreshImg, &minVal, &maxVal, &minLoc, &maxLoc, Mat());
 		if (255 == minVal) {
 			Init(DEBUG);
 			return;
@@ -84,7 +85,7 @@ extern "C" {
 		// Get contours
 		vector<vector<Point>> contours;
 		vector<Vec4i> hierarchy;
-		findContours(threshImg, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+		findContours(aThreshImg, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 		// Get bounding circles of contours
 		vector<Point2f>center(contours.size());
@@ -111,8 +112,9 @@ extern "C" {
 
 		// Show several debug windows
 		if (DEBUG) {
-			imshow("Init Thresh Img " + to_string(camera), img);
-			imshow("Adapt Thresh Img " + to_string(camera), threshImg);
+			imshow("Raw Img " + to_string(camera), img);
+			imshow("Init Thresh Img " + to_string(camera), iThreshImg);
+			imshow("Adapt Thresh Img " + to_string(camera), aThreshImg);
 			Mat drawing = Mat::zeros(img.size(), CV_8UC3);
 			for (int i = 0; i < contours.size(); i++) {
 				Scalar color = Scalar(0, 0, 255);
