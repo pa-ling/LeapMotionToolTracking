@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 20390119759500768}
   - component: {fileID: 114996521948859956}
   - component: {fileID: 114265565092722808}
-  - component: {fileID: 114344946285723224}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -906,22 +905,6 @@ MonoBehaviour:
   marker1: {fileID: 1150307176251720}
   tool: {fileID: 1702437124268394}
   filterData: 1
---- !u!114 &114344946285723224
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1033852762604804}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82bec5587d6351345805e5f7e3b4694a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  centralPoint: {x: 0, y: 3, z: 0}
-  rotatingSpeed: 50
-  movingSpeed: 20
-  minDistanceToZero: 3
-  maxDistanceToZero: 20
 --- !u!114 &114457340312992796
 MonoBehaviour:
   m_ObjectHideFlags: 1
