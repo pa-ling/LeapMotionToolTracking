@@ -148,7 +148,7 @@ public class LeapToolTracking : LeapImageRetriever
                 }
                 else
                 {
-                    undistortedImg[dindex] = 128;
+                    undistortedImg[dindex] = 0;
                 }
             }
         }
