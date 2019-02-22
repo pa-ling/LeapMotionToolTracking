@@ -10,7 +10,7 @@ public class LeapToolTracking : LeapImageRetriever
     public static extern void Init(bool debug);
 
     [DllImport("LeapTT", EntryPoint = "GetLeapImages")]
-    public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int size);
+    public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int width, int height);
 
     [DllImport("LeapTT", EntryPoint = "CropImage")]
     public static extern void CropImage(byte[] imgData, byte[] croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight);
@@ -23,11 +23,14 @@ public class LeapToolTracking : LeapImageRetriever
 
     private const int TEX_WIDTH = 400;
     private const int TEX_HEIGHT = 400;
-    private const int MAX_FOV = 8; // field of view of the leap motion peripheral
     private const int ROW_OFFSET = 100;
-    private const int COL_OFFSET = 60;
+    private const int COL_OFFSET = 0;
     private const int WIDTH_WITH_OFFSET = TEX_WIDTH - 2 * COL_OFFSET;
     private const int HEIGHT_WITH_OFFSET = TEX_HEIGHT - 2 * ROW_OFFSET;
+
+    private const float H_FOV = 2.24603794f;
+    private const float V_FOV = 1.5696862f;
+    private const float FOV_MODIFIER = 3.4f;
 
     private const float DISTANCE_OF_CAMERAS = 4.0f;
     private const float CAMERA_ANGLE = 151.93f;
@@ -65,7 +68,7 @@ public class LeapToolTracking : LeapImageRetriever
         int imageSize = _currentImage.Width * _currentImage.Height;
         byte[] raw = _currentImage.Data(Leap.Image.CameraType.LEFT);
         byte[] leftImgData = new byte[imageSize], rightImgData = new byte[imageSize];
-        GetLeapImages(raw, leftImgData, rightImgData, imageSize);
+        GetLeapImages(raw, leftImgData, rightImgData, _currentImage.Width, _currentImage.Height);
 
         // Left image
         byte[] undistortedLeftImg = UndistortImage(leftImgData, Leap.Image.CameraType.LEFT);
@@ -131,13 +134,13 @@ public class LeapToolTracking : LeapImageRetriever
                 input.y = row / TEX_HEIGHT;
 
                 //Convert from normalized [0..1] to ray slopes
-                input.x = (input.x - 0.5f) * MAX_FOV;
-                input.y = (input.y - 0.5f) * MAX_FOV;
+                input.x = (input.x - 0.5f) * V_FOV * FOV_MODIFIER;
+                input.y = (input.y - 0.5f) * H_FOV * FOV_MODIFIER;
 
                 
                 Leap.Vector pixel = _currentImage.RectilinearToPixel(type, input);
                 int dindex = (int) Mathf.Floor(row * TEX_WIDTH + col);
-                int pindex = (int) Mathf.Floor(pixel.y) * _currentImage.Width + (int) Mathf.Round(pixel.x);
+                int pindex = (int) Mathf.Floor(pixel.y) * _currentImage.Width + (int) Mathf.Floor(pixel.x);
 
                 if (pixel.x >= 0 && pixel.x < _currentImage.Width && pixel.y >= 0 && pixel.y < _currentImage.Height)
                 {
@@ -145,7 +148,7 @@ public class LeapToolTracking : LeapImageRetriever
                 }
                 else
                 {
-                    undistortedImg[dindex] = 0;
+                    undistortedImg[dindex] = 128;
                 }
             }
         }

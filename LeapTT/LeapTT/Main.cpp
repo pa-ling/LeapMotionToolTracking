@@ -21,7 +21,7 @@ extern "C" {
 	void __declspec(dllexport) Init(bool debug)
 	{
 		LOG(INFO) << "Initalizing LeapTT.";
-		LOG(INFO) << "Debug mode enabled." << debug;
+		LOG(INFO) << "Debug: " << debug;
 		prevData[0][0] = Marker();
 		prevData[0][1] = Marker();
 		prevData[1][0] = Marker();
@@ -29,10 +29,18 @@ extern "C" {
 		DEBUG = debug;
 	}
 
-	void __declspec(dllexport) GetLeapImages(unsigned char* raw, unsigned char* img0, unsigned char* img1, int size)
+	void __declspec(dllexport) GetLeapImages(unsigned char* raw, unsigned char* img0Data, unsigned char* img1Data, int width, int height)
 	{
-		memcpy(img0, raw, size);
-		memcpy(img1, raw + size, size);
+		int size = width * height;
+		memcpy(img0Data, raw, size);
+		memcpy(img1Data, raw + size, size);
+
+		if (DEBUG) {
+			Mat img0(height, width, CV_8UC1, img0Data);
+			Mat img1(height, width, CV_8UC1, img1Data);
+			imshow("Raw Img 0", img0);
+			imshow("Raw Img 1", img1);
+		}
 	}
 
 	void __declspec(dllexport) CropImage(unsigned char* imgData, unsigned char* croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight)
@@ -112,8 +120,8 @@ extern "C" {
 
 		// Show several debug windows
 		if (DEBUG) {
-			imshow("Raw Img " + to_string(camera), img);
-			imshow("Init Thresh Img " + to_string(camera), iThreshImg);
+			imshow("Undist Img " + to_string(camera), img);
+			//imshow("Init Thresh Img " + to_string(camera), iThreshImg);
 			imshow("Adapt Thresh Img " + to_string(camera), aThreshImg);
 			Mat drawing = Mat::zeros(img.size(), CV_8UC3);
 			for (int i = 0; i < contours.size(); i++) {
