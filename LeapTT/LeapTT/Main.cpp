@@ -22,11 +22,11 @@ extern "C" {
 	{
 		LOG(INFO) << "Initalizing LeapTT.";
 		LOG(INFO) << "Debug: " << debug;
+		// Initialize marker1 at the top and marker0 at the bottom of the picture
 		prevData[0][0] = Marker(200, 200 , 1);
 		prevData[0][1] = Marker(200, 0, 1);
 		prevData[1][0] = Marker(200, 200, 1);
 		prevData[1][1] = Marker(200, 0, 1);
-		//TODO: Initialize marker0 at the top of the picture and marker1 at the bottom?
 		DEBUG = debug;
 	}
 
@@ -138,10 +138,10 @@ extern "C" {
 			imshow("Result " + to_string(camera), drawing);
 		}
 
-		//Save positions for next frame
+		// Save positions for next frame
 		prevData[camera][0] = newData[0];
 		prevData[camera][1] = newData[1];
-		delete [] newData;
+		delete [] newData; // free memory
 	}
 
 }

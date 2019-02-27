@@ -19,40 +19,46 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        handleMovement();
+        HandleMovement();
     }
 
-    private void handleMovement()
+    private void HandleMovement()
     {
         float rotatingRange = rotatingSpeed * Time.deltaTime;
         float movingRange = movingSpeed * Time.deltaTime;
 
+        // Move forward
         if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) && Vector3.Distance(transform.position, centralPoint) > minDistanceToZero)
         {
             transform.position += transform.forward * movingRange;
         }
 
+        // Rotate left
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
             transform.RotateAround(centralPoint, Vector3.up, rotatingRange);
         }
-
+        
+        // Move backward
         if ((Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) && Vector3.Distance(transform.position, centralPoint) < maxDistanceToZero)
         {
             transform.position -= transform.forward * movingRange;
         }
 
+        // Rotate Right
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
             transform.RotateAround(centralPoint, -Vector3.up, rotatingRange);
         }
 
+        //Rotate Top
         if (Input.GetKey(KeyCode.Space) && MAX_VERTICAL_ROTATION > verticalRotation + rotatingRange)
         {
             transform.RotateAround(centralPoint, transform.right, rotatingRange);
             verticalRotation += rotatingRange;
         }
 
+        //Rotate Down
         if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && -MAX_VERTICAL_ROTATION < verticalRotation - rotatingRange)
         {
             transform.RotateAround(centralPoint, -transform.right, rotatingRange);
@@ -60,9 +66,4 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    public override void OnStartLocalPlayer()
-    {
-        //GetComponent<MeshRenderer>().material.color = Color.blue;
-        transform.Find("Head").GetComponent<MeshRenderer>().material.color = Color.blue;
-    }
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using Leap.Unity;
 
 public class NetworkCamera : NetworkBehaviour {
 
@@ -7,7 +8,10 @@ public class NetworkCamera : NetworkBehaviour {
     {
         if (!isLocalPlayer)
         {
-            transform.Find("Head/Visor/Camera").gameObject.GetComponent<Camera>().enabled = false;
+            GameObject cam = transform.Find("Head/Visor/Camera").gameObject;
+            cam.GetComponent<Camera>().enabled = false;
+            cam.GetComponent<LeapToolTracking>().enabled = false;
+            cam.GetComponent<LeapServiceProvider>().enabled = false;
             return;
         }
     }

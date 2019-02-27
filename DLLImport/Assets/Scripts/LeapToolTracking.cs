@@ -2,7 +2,6 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 using Leap.Unity;
-using System.Collections.Generic;
 
 public class LeapToolTracking : LeapImageRetriever
 {
@@ -44,11 +43,12 @@ public class LeapToolTracking : LeapImageRetriever
     public GameObject marker0;
     public GameObject marker1;
     public GameObject tool;
-    public bool filterData;
+    public bool filterData = true;
+    public bool debug = true;
 
     private void Start()
     {
-        Init(true);
+        Init(debug);
         previousLevel = new Vector3[2];
         previousLevel[0] = Vector3.zero;
         previousLevel[1] = Vector3.zero;
@@ -56,6 +56,9 @@ public class LeapToolTracking : LeapImageRetriever
         previousTrend = new Vector3[2];
         previousTrend[0] = Vector3.zero;
         previousTrend[1] = Vector3.zero;
+
+        marker0.SetActive(debug);
+        marker1.SetActive(debug);
     }
 
     private void OnPreRender()
