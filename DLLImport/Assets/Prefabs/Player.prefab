@@ -124,6 +124,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4644766389591900}
   - component: {fileID: 114457340312992796}
+  - component: {fileID: 114317967540208140}
   m_Layer: 0
   m_Name: Paint
   m_TagString: Untagged
@@ -241,8 +242,9 @@ GameObject:
   - component: {fileID: 114493084276026420}
   - component: {fileID: 114082577656425120}
   - component: {fileID: 114480255488949012}
-  - component: {fileID: 114697602312657766}
   - component: {fileID: 114752089178549880}
+  - component: {fileID: 114697602312657766}
+  - component: {fileID: 114827387782434922}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -908,13 +910,24 @@ MonoBehaviour:
   tool: {fileID: 1702437124268394}
   filterData: 1
   debug: 1
---- !u!114 &114457340312992796
+--- !u!114 &114317967540208140
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1257871670768844}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 361cf89c4f99a4e4bb7a0845f36c00cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114457340312992796
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1257871670768844}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de2c50045681d7b4ca82932b7a11a622, type: 3}
   m_Name: 
@@ -995,6 +1008,23 @@ MonoBehaviour:
   m_MovementThreshold: 0.001
   m_InterpolateRotation: 0.5
   m_InterpolateMovement: 0.5
+--- !u!114 &114827387782434922
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1996938614998302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f239c28a86e7b4c8c1c1720a9e3b61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  strokePrefab: {fileID: 1081164177755872, guid: 41aa49a4b06460746baf5613fa81ee95,
+    type: 2}
+  strokeColor: {r: 1, g: 1, b: 1, a: 1}
+  strokeWidth: 0.05
+  samplingRate: 0.01
+  strokes: []
 --- !u!114 &114875230648142098
 MonoBehaviour:
   m_ObjectHideFlags: 1
