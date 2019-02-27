@@ -22,10 +22,11 @@ extern "C" {
 	{
 		LOG(INFO) << "Initalizing LeapTT.";
 		LOG(INFO) << "Debug: " << debug;
-		prevData[0][0] = Marker();
-		prevData[0][1] = Marker();
-		prevData[1][0] = Marker();
-		prevData[1][1] = Marker();
+		prevData[0][0] = Marker(200, 200 , 1);
+		prevData[0][1] = Marker(200, 0, 1);
+		prevData[1][0] = Marker(200, 200, 1);
+		prevData[1][1] = Marker(200, 0, 1);
+		//TODO: Initialize marker0 at the top of the picture and marker1 at the bottom?
 		DEBUG = debug;
 	}
 
@@ -128,8 +129,12 @@ extern "C" {
 				Scalar color = Scalar(0, 0, 255);
 				circle(drawing, center[i], (int)radius[i], color, 1);
 			}
-			circle(drawing, Point2f(markerLocations[0], markerLocations[1]), 2, Scalar(30, 147, 56), 2);
-			circle(drawing, Point2f(markerLocations[2], markerLocations[3]), 2, Scalar(255, 151, 0), 2);
+			circle(drawing, Point2f(markerLocations[0], markerLocations[1]), 2, Scalar(30, 147, 56), 2); // green = marker0
+			circle(drawing, Point2f(markerLocations[2], markerLocations[3]), 2, Scalar(255, 151, 0), 2); // blue = marker1
+			circle(drawing, Point2f(0, 0), 2, Scalar(0, 0, 255), 10); // red = top left
+			circle(drawing, Point2f(400, 0), 2, Scalar(0, 255, 255), 10); // yellow = top right
+			circle(drawing, Point2f(0, 200), 2, Scalar(255, 0, 255), 10); // pink = bottom left
+			circle(drawing, Point2f(400, 200), 2, Scalar(155, 155, 155), 10); // grey = bottom right
 			imshow("Result " + to_string(camera), drawing);
 		}
 

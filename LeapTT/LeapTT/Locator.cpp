@@ -95,6 +95,7 @@ int Locator::findMostLikelyPoint(Point2f point, float radius, vector<Point2f> po
 		}
 	}
 	return mostLikelyPointIndex;
+	//TODO: return score too?
 }
 
 float Locator::getEuclidianDistance(Point2f a, Point2f b)

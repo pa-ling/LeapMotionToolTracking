@@ -35,8 +35,8 @@ public class LeapToolTracking : LeapImageRetriever
     private const float DISTANCE_OF_CAMERAS = 4.0f;
     private const float CAMERA_ANGLE = 151.93f;
 
-    private const float LEVEL_ACTUALITY_MODIFIER = 0.2f;
-    private const float TREND_ACTUALITY_MODIFIER = 0.2f;
+    private const float LEVEL_ACTUALITY_MODIFIER = 0.3f;
+    private const float TREND_ACTUALITY_MODIFIER = 0.3f;
 
     private Vector3[] previousLevel;
     private Vector3[] previousTrend;
