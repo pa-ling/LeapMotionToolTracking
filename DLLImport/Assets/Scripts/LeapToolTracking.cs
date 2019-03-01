@@ -50,8 +50,8 @@ public class LeapToolTracking : LeapImageRetriever
     {
         Init(debug);
         previousLevel = new Vector3[2];
-        previousLevel[0] = Vector3.zero;
-        previousLevel[1] = Vector3.zero;
+        previousLevel[0] = new Vector3(0, 5, 0);
+        previousLevel[1] = previousLevel[0];
 
         previousTrend = new Vector3[2];
         previousTrend[0] = Vector3.zero;
@@ -68,11 +68,13 @@ public class LeapToolTracking : LeapImageRetriever
             return;
         }
 
+        // Separate left and right image
         int imageSize = _currentImage.Width * _currentImage.Height;
         byte[] raw = _currentImage.Data(Leap.Image.CameraType.LEFT);
         byte[] leftImgData = new byte[imageSize], rightImgData = new byte[imageSize];
         GetLeapImages(raw, leftImgData, rightImgData, _currentImage.Width, _currentImage.Height);
 
+        // Get location of the markers in both pictures
         float[] leftMarkerLocations = ProcessImage(leftImgData, Leap.Image.CameraType.LEFT);
         float[] rightMarkerLocations = ProcessImage(rightImgData, Leap.Image.CameraType.RIGHT);
 
@@ -87,14 +89,14 @@ public class LeapToolTracking : LeapImageRetriever
             leftMarkerLocations[2] = tempX;
             leftMarkerLocations[3] = tempY;
         }
-
         Debug.Log(System.DateTime.Now + ": RawMarkerL: (" + leftMarkerLocations[0] + "; " + leftMarkerLocations[1] + "); (" + leftMarkerLocations[2] + "; " + leftMarkerLocations[3] + ")");
         Debug.Log(System.DateTime.Now + ": RawMarkerR: (" + rightMarkerLocations[0] + "; " + rightMarkerLocations[1] + "); (" + rightMarkerLocations[2] + "; " + rightMarkerLocations[3] + ")");
+
+        // Calculate marker position in 3D Space
         Vector3 marker0Pos = GetMarkerPosition(leftMarkerLocations[0], rightMarkerLocations[0], leftMarkerLocations[1], 0);
         Vector3 marker1Pos = GetMarkerPosition(leftMarkerLocations[2], rightMarkerLocations[2], leftMarkerLocations[3], 1);
         marker0.transform.localPosition = marker0Pos;
         marker1.transform.localPosition = marker1Pos;
-
         tool.transform.localPosition = marker0Pos;
         tool.transform.LookAt(marker1.transform.position);
     }
