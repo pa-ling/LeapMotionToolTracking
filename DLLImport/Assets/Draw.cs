@@ -26,6 +26,7 @@ public class Draw : MonoBehaviour {
         if (drawing)
         {
             sc.Draw();
+            sentStop = false;
         }
         else if (!sentStop)
         {
