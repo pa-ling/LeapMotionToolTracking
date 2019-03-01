@@ -73,33 +73,8 @@ public class LeapToolTracking : LeapImageRetriever
         byte[] leftImgData = new byte[imageSize], rightImgData = new byte[imageSize];
         GetLeapImages(raw, leftImgData, rightImgData, _currentImage.Width, _currentImage.Height);
 
-        // Left image
-        byte[] undistortedLeftImg = UndistortImage(leftImgData, Leap.Image.CameraType.LEFT);
-        byte[] croppedUndistortedLeftImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET];
-        CropImage(
-            undistortedLeftImg,
-            croppedUndistortedLeftImg,
-            TEX_WIDTH, TEX_HEIGHT,
-            COL_OFFSET, //COL_OFFSET and ROW_OFFSET have to be swapped here
-            ROW_OFFSET,
-            WIDTH_WITH_OFFSET,
-            HEIGHT_WITH_OFFSET);
-        float[] leftMarkerLocations = new float[4];
-        GetMarkerLocations(croppedUndistortedLeftImg, leftMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 0);
-
-        // Right image
-        byte[] undistortedRightImg = UndistortImage(rightImgData, Leap.Image.CameraType.RIGHT);
-        byte[] croppedUndistortedRightImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET];
-        CropImage(
-            undistortedRightImg,
-            croppedUndistortedRightImg,
-            TEX_WIDTH, TEX_HEIGHT,
-            COL_OFFSET, //COL_OFFSET and ROW_OFFSET have to be swapped here
-            ROW_OFFSET,
-            WIDTH_WITH_OFFSET,
-            HEIGHT_WITH_OFFSET);
-        float[] rightMarkerLocations = new float[4];
-        GetMarkerLocations(croppedUndistortedRightImg, rightMarkerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, 1);
+        float[] leftMarkerLocations = ProcessImage(leftImgData, Leap.Image.CameraType.LEFT);
+        float[] rightMarkerLocations = ProcessImage(rightImgData, Leap.Image.CameraType.RIGHT);
 
         // Sometimes Markers are not equally detected in both pictures. If this happens the left marker locations are swapped.
         if ((leftMarkerLocations[1] > leftMarkerLocations[3] && rightMarkerLocations[1] < rightMarkerLocations[3]) ||
@@ -122,6 +97,24 @@ public class LeapToolTracking : LeapImageRetriever
 
         tool.transform.localPosition = marker0Pos;
         tool.transform.LookAt(marker1.transform.position);
+    }
+
+    private float[] ProcessImage(byte[] imgData, Leap.Image.CameraType type)
+    {
+        byte[] undistortedImg = UndistortImage(imgData, type);
+        byte[] croppedUndistortedImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET];
+        CropImage(
+            undistortedImg,
+            croppedUndistortedImg,
+            TEX_WIDTH, TEX_HEIGHT,
+            COL_OFFSET, //COL_OFFSET and ROW_OFFSET have to be swapped here
+            ROW_OFFSET,
+            WIDTH_WITH_OFFSET,
+            HEIGHT_WITH_OFFSET);
+        float[] markerLocations = new float[4];
+        GetMarkerLocations(croppedUndistortedImg, markerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, (int) type);
+
+        return markerLocations;
     }
 
     private byte[] UndistortImage(byte[] imgData, Leap.Image.CameraType type)
