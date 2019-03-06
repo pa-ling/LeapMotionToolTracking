@@ -17,11 +17,14 @@ public class PlayerController : NetworkBehaviour
     private SketchingController sc;
     private GameObject paint;
 
-    private bool drawing = false;
+    [SyncVar]
+    public bool drawing = false;
     private bool sentStop = true;
 
     void Start()
     {
+        paint = transform.Find("Body/Tool Tracking/Brush/Bristles/Paint").gameObject;
+
         if (!isLocalPlayer)
         {
             GameObject cam = transform.Find("Head/Visor/Camera").gameObject;
@@ -31,16 +34,16 @@ public class PlayerController : NetworkBehaviour
 
             GameObject bristles = transform.Find("Body/Tool Tracking/Brush/Bristles").gameObject;
             bristles.GetComponent<Pointer>().enabled = false;
-            //bristles.GetComponent<Draw>().enabled = false;
             return;
         }
 
         sc = GetComponent<SketchingController>();
-        paint = transform.Find("Body/Tool Tracking/Brush/Bristles/Paint").gameObject;
     }
 
     void Update()
     {
+        HandleParticles();
+
         if (!isLocalPlayer)
         {
             return;
@@ -48,6 +51,15 @@ public class PlayerController : NetworkBehaviour
 
         HandleDrawing(paint.transform.position);
         HandleMovement();
+    }
+
+    private void HandleParticles()
+    {
+        ParticleSystem ps = paint.GetComponent<ParticleSystem>();
+        if ((drawing && ps.isStopped) || (!drawing && ps.isPlaying))
+        {
+            SwitchParticles(ps);
+        }
     }
 
     private void HandleMovement()
@@ -100,8 +112,7 @@ public class PlayerController : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.PageDown))
         {
-            drawing = !drawing;
-            SwitchParticles(paint.GetComponent<ParticleSystem>());
+            CmdSwitchDrawing();
         }
 
         if (drawing)
@@ -114,6 +125,12 @@ public class PlayerController : NetworkBehaviour
             sc.StopDraw();
             sentStop = true;
         }
+    }
+
+    [Command]
+    private void CmdSwitchDrawing()
+    {
+        drawing = !drawing;
     }
 
     private void SwitchParticles(ParticleSystem ps)
