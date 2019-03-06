@@ -40,7 +40,6 @@ GameObject:
   - component: {fileID: 33203855353326360}
   - component: {fileID: 135998184183569210}
   - component: {fileID: 23226286725722376}
-  - component: {fileID: 114875230648142098}
   m_Layer: 0
   m_Name: Bristles
   m_TagString: Untagged
@@ -915,6 +914,11 @@ MonoBehaviour:
   movingSpeed: 20
   minDistanceToZero: 3
   maxDistanceToZero: 20
+  laserPrefab: {fileID: 1338862414193942, guid: 87d6f69339516424ea09f8d87cbf5bc3,
+    type: 2}
+  markerPrefab: {fileID: 1738316654536160, guid: da9bcd9fda92df24aae739ff429c56fb,
+    type: 2}
+  markerOffset: 2
 --- !u!114 &114752089178549880
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -951,22 +955,6 @@ MonoBehaviour:
   strokeWidth: 0.05
   samplingRate: 0.01
   strokes: []
---- !u!114 &114875230648142098
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1045651691944748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b78b1fcbcbad8343b3c613c64091383, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  laserPrefab: {fileID: 1338862414193942, guid: 87d6f69339516424ea09f8d87cbf5bc3,
-    type: 2}
-  markerPrefab: {fileID: 1738316654536160, guid: da9bcd9fda92df24aae739ff429c56fb,
-    type: 2}
-  markerOffset: 2
 --- !u!114 &114996521948859956
 MonoBehaviour:
   m_ObjectHideFlags: 1

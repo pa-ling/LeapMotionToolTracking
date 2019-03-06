@@ -11,17 +11,25 @@ public class PlayerController : NetworkBehaviour
     public float minDistanceToZero = 3;
     public float maxDistanceToZero = 20;
 
+    public GameObject laserPrefab;
+    public GameObject markerPrefab;
+    public int markerOffset = 2;
+
     private const float MAX_VERTICAL_ROTATION = 90;
     private float verticalRotation = 0;
 
     private SketchingController sc;
     private GameObject paint;
 
+    private GameObject laser;
+    private bool isLaserOn = false;
+    private GameObject marker;
+
     [SyncVar]
     private bool drawing = false;
     private bool sentStop = true;
 
-    void Start()
+    private void Start()
     {
         paint = transform.Find("Body/Tool Tracking/Brush/Bristles/Paint").gameObject;
 
@@ -31,16 +39,15 @@ public class PlayerController : NetworkBehaviour
             cam.GetComponent<Camera>().enabled = false;
             cam.GetComponent<LeapToolTracking>().enabled = false;
             cam.GetComponent<LeapServiceProvider>().enabled = false;
-
-            GameObject bristles = transform.Find("Body/Tool Tracking/Brush/Bristles").gameObject;
-            bristles.GetComponent<Pointer>().enabled = false;
             return;
         }
 
         sc = GetComponent<SketchingController>();
+        laser = Instantiate(laserPrefab);
+        laser.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
         HandleParticles();
 
@@ -49,6 +56,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
+        HandlePointer(paint.transform.position, paint.transform.up);
         HandleDrawing(paint.transform.position);
         HandleMovement();
     }
@@ -56,10 +64,52 @@ public class PlayerController : NetworkBehaviour
     private void HandleParticles()
     {
         ParticleSystem ps = paint.GetComponent<ParticleSystem>();
-        if ((drawing && ps.isStopped) || (!drawing && ps.isPlaying))
+
+        if (drawing && ps.isStopped)
         {
-            SwitchParticles(ps);
+            ps.Play();
         }
+
+        if (!drawing && ps.isPlaying)
+        {
+            ps.Stop();
+        }
+
+    }
+
+    private void HandlePointer(Vector3 position, Vector3 direction)
+    {
+        RaycastHit hit;
+        if (Input.GetKeyDown(KeyCode.PageDown))
+        {
+            isLaserOn = !isLaserOn;
+            laser.SetActive(isLaserOn);
+        }
+
+        if (isLaserOn && Physics.Raycast(position, direction, out hit))
+        {
+            ShowLaser(hit, position);
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                PlaceMarker(hit);
+            }
+        }
+    }
+
+    private void ShowLaser(RaycastHit hit, Vector3 origin)
+    {
+        laser.SetActive(true); //Show the laser
+        laser.transform.position = Vector3.Lerp(origin, hit.point, .5f); // Move laser to the middle between the controller and the position the raycast hit
+        laser.transform.LookAt(hit.point); // Rotate laser facing the hit point
+        laser.transform.localScale = new Vector3(laser.transform.localScale.x, laser.transform.localScale.y, hit.distance); // Scale laser so it fits exactly between the controller & the hit point
+    }
+
+    private void PlaceMarker(RaycastHit hit)
+    {
+        marker = Instantiate(markerPrefab);
+        marker.transform.position = hit.point + hit.normal * markerOffset;
+        marker.transform.LookAt(hit.point, hit.normal);
+        marker.transform.Rotate(-90, 0, 0);
     }
 
     private void HandleMovement()
@@ -133,15 +183,4 @@ public class PlayerController : NetworkBehaviour
         drawing = !drawing;
     }
 
-    private void SwitchParticles(ParticleSystem ps)
-    {
-        if (ps.isPlaying)
-        {
-            ps.Stop();
-        }
-        else
-        {
-            ps.Play();
-        }
-    }
 }
