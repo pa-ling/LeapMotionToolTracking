@@ -15,23 +15,27 @@ public class PlayerController : NetworkBehaviour
     public GameObject markerPrefab;
     public int markerOffset = 2;
 
+    [SyncVar(hook = "OnPlayerColorChange")]
+    private Color playerColor = Color.black;
+
     private const float MAX_VERTICAL_ROTATION = 90;
     private float verticalRotation = 0;
 
     private SketchingController sc;
     private GameObject paint;
 
-    private GameObject laser;
-    private bool isLaserOn = false;
-    private GameObject marker;
-
     [SyncVar]
     private bool drawing = false;
     private bool sentStop = true;
 
+    private GameObject laser;
+    private bool isLaserOn = false;
+    private GameObject marker;
+
     private void Start()
     {
         paint = transform.Find("Body/Tool Tracking/Brush/Bristles/Paint").gameObject;
+        sc = GetComponent<SketchingController>();
 
         if (!isLocalPlayer)
         {
@@ -39,12 +43,15 @@ public class PlayerController : NetworkBehaviour
             cam.GetComponent<Camera>().enabled = false;
             cam.GetComponent<LeapToolTracking>().enabled = false;
             cam.GetComponent<LeapServiceProvider>().enabled = false;
+
+            OnPlayerColorChange(playerColor);
             return;
         }
 
-        sc = GetComponent<SketchingController>();
         laser = Instantiate(laserPrefab);
         laser.SetActive(false);
+
+        CmdAssignColor();
     }
 
     private void Update()
@@ -99,6 +106,7 @@ public class PlayerController : NetworkBehaviour
     private void ShowLaser(RaycastHit hit, Vector3 origin)
     {
         laser.SetActive(true); //Show the laser
+        laser.GetComponent<MeshRenderer>().material.color = playerColor; // laser color
         laser.transform.position = Vector3.Lerp(origin, hit.point, .5f); // Move laser to the middle between the controller and the position the raycast hit
         laser.transform.LookAt(hit.point); // Rotate laser facing the hit point
         laser.transform.localScale = new Vector3(laser.transform.localScale.x, laser.transform.localScale.y, hit.distance); // Scale laser so it fits exactly between the controller & the hit point
@@ -111,6 +119,7 @@ public class PlayerController : NetworkBehaviour
         marker.transform.position = point + normal * markerOffset;
         marker.transform.LookAt(point, normal);
         marker.transform.Rotate(-90, 0, 0);
+        marker.GetComponentInChildren<MeshRenderer>().material.color = playerColor; // marker color
 
         NetworkServer.Spawn(marker);
     }
@@ -184,6 +193,22 @@ public class PlayerController : NetworkBehaviour
     private void CmdSwitchDrawing()
     {
         drawing = !drawing;
+    }
+
+    [Command]
+    private void CmdAssignColor()
+    {
+        playerColor = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+    }
+    
+    void OnPlayerColorChange(Color color)
+    {
+        transform.Find("Head").GetComponent<MeshRenderer>().material.color = color; // player color
+        transform.Find("Body/Tool Tracking/Brush/Bristles").GetComponent<MeshRenderer>().material.color = color; // bristles color
+        transform.Find("Body/Tool Tracking/Brush/Trail").GetComponent<TrailRenderer>().material.color = color; // trail color
+        sc.strokeColor = color; // drawing color
+        ParticleSystem.MainModule settings = paint.GetComponent<ParticleSystem>().main;
+        settings.startColor = new ParticleSystem.MinMaxGradient(color); // particle color
     }
 
 }
