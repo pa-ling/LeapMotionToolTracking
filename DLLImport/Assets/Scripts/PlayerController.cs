@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using Leap.Unity;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -16,6 +17,14 @@ public class PlayerController : NetworkBehaviour
     {
         if (!isLocalPlayer)
         {
+            GameObject cam = transform.Find("Head/Visor/Camera").gameObject;
+            cam.GetComponent<Camera>().enabled = false;
+            cam.GetComponent<LeapToolTracking>().enabled = false;
+            cam.GetComponent<LeapServiceProvider>().enabled = false;
+
+            GameObject bristles = transform.Find("Body/Tool Tracking/Brush/Bristles").gameObject;
+            bristles.GetComponent<Pointer>().enabled = false;
+            bristles.GetComponent<Draw>().enabled = false;
             return;
         }
 
