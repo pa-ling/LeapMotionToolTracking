@@ -18,7 +18,7 @@ public class PlayerController : NetworkBehaviour
     private GameObject paint;
 
     [SyncVar]
-    public bool drawing = false;
+    private bool drawing = false;
     private bool sentStop = true;
 
     void Start()
@@ -110,7 +110,7 @@ public class PlayerController : NetworkBehaviour
     {
         sc.SetVirtualBrushPosition(position);
 
-        if (Input.GetKeyDown(KeyCode.PageDown))
+        if (Input.GetKeyDown(KeyCode.PageUp))
         {
             CmdSwitchDrawing();
         }

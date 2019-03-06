@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class Pointer : MonoBehaviour
 {
-	public GameObject laserPrefab; // The laser prefab
-	public GameObject markerPrefab; // Stores a reference to the marker prefab.
+	public GameObject laserPrefab;
+    public GameObject markerPrefab;
 	public int markerOffset;
 
-	private GameObject laser; // A reference to the spawned laser
+    private GameObject laser;
 	private bool isLaserOn = false;
-	private GameObject marker; // A reference to an instance of the marker
+    private GameObject marker;
 
-	void Start()
+    void Start()
 	{
 		laser = Instantiate(laserPrefab);
 		laser.SetActive (false);
@@ -20,21 +20,20 @@ public class Pointer : MonoBehaviour
 	void Update()
 	{
 		RaycastHit hit;
-		if (Input.GetKeyDown(KeyCode.PageUp))
+		if (Input.GetKeyDown(KeyCode.PageDown))
 		{
-			isLaserOn = true;
+			isLaserOn = !isLaserOn;
+            laser.SetActive(isLaserOn);
 		}
 
-		if (Physics.Raycast(transform.position, transform.up, out hit) && isLaserOn)
+		if (isLaserOn && Physics.Raycast(transform.position, transform.up, out hit))
 		{
 			ShowLaser(hit, transform.position);
-			if (Input.GetKeyUp(KeyCode.PageUp))
-			{
-				PlaceMarker (hit);
-				isLaserOn = false;
-				laser.SetActive (false);
-			}
-		}
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                PlaceMarker(hit);
+            }
+        }
 	}
 
 	void OnDestroy() 
@@ -50,12 +49,12 @@ public class Pointer : MonoBehaviour
 		laser.transform.localScale = new Vector3(laser.transform.localScale.x, laser.transform.localScale.y, hit.distance); // Scale laser so it fits exactly between the controller & the hit point
 	}
 
-	private void PlaceMarker(RaycastHit hit)
+    private void PlaceMarker(RaycastHit hit)
 	{
 		marker = Instantiate(markerPrefab);
-		marker.transform.position = hit.point + hit.normal * markerOffset;
+		marker.transform.position = hit.point + hit.normal* markerOffset;
 		marker.transform.LookAt(hit.point, hit.normal);
-		marker.transform.Rotate (-90, 0, 0);
+		marker.transform.Rotate(-90, 0, 0);
 	}
 
 }
