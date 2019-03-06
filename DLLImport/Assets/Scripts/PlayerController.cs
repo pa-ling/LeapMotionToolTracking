@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using Leap.Unity;
+using VENTUS.Interaction.Sketching;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -11,9 +12,15 @@ public class PlayerController : NetworkBehaviour
     public float maxDistanceToZero = 20;
 
     private const float MAX_VERTICAL_ROTATION = 90;
-    private float verticalRotation = 10;
+    private float verticalRotation = 0;
 
-    void Update()
+    private SketchingController sc;
+    private GameObject paint;
+
+    private bool drawing = false;
+    private bool sentStop = true;
+
+    void Start()
     {
         if (!isLocalPlayer)
         {
@@ -24,10 +31,22 @@ public class PlayerController : NetworkBehaviour
 
             GameObject bristles = transform.Find("Body/Tool Tracking/Brush/Bristles").gameObject;
             bristles.GetComponent<Pointer>().enabled = false;
-            bristles.GetComponent<Draw>().enabled = false;
+            //bristles.GetComponent<Draw>().enabled = false;
             return;
         }
 
+        sc = GetComponent<SketchingController>();
+        paint = transform.Find("Body/Tool Tracking/Brush/Bristles/Paint").gameObject;
+    }
+
+    void Update()
+    {
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
+        HandleDrawing(paint.transform.position);
         HandleMovement();
     }
 
@@ -75,4 +94,37 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    private void HandleDrawing(Vector3 position)
+    {
+        sc.SetVirtualBrushPosition(position);
+
+        if (Input.GetKeyDown(KeyCode.PageDown))
+        {
+            drawing = !drawing;
+            SwitchParticles(paint.GetComponent<ParticleSystem>());
+        }
+
+        if (drawing)
+        {
+            sc.Draw();
+            sentStop = false;
+        }
+        else if (!sentStop)
+        {
+            sc.StopDraw();
+            sentStop = true;
+        }
+    }
+
+    private void SwitchParticles(ParticleSystem ps)
+    {
+        if (ps.isPlaying)
+        {
+            ps.Stop();
+        }
+        else
+        {
+            ps.Play();
+        }
+    }
 }
