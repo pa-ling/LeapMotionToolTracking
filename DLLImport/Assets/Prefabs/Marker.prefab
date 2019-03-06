@@ -58,6 +58,8 @@ GameObject:
   - component: {fileID: 4304884811398460}
   - component: {fileID: 82458326316328276}
   - component: {fileID: 114342509392437334}
+  - component: {fileID: 114521877990610608}
+  - component: {fileID: 114570482403922106}
   m_Layer: 0
   m_Name: Marker
   m_TagString: Untagged
@@ -309,6 +311,59 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   markerTime: 3
+--- !u!114 &114521877990610608
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1738316654536160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 218
+    i1: 155
+    i2: 205
+    i3: 159
+    i4: 218
+    i5: 146
+    i6: 223
+    i7: 36
+    i8: 170
+    i9: 231
+    i10: 57
+    i11: 255
+    i12: 66
+    i13: 156
+    i14: 86
+    i15: 251
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
+--- !u!114 &114570482403922106
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1738316654536160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TransformSyncMode: 1
+  m_SendInterval: 0.1
+  m_SyncRotationAxis: 7
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_VelocityThreshold: 0.0001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
 --- !u!114 &114985633734479066
 MonoBehaviour:
   m_ObjectHideFlags: 1

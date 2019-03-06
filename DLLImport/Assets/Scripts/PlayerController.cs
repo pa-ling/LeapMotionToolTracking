@@ -91,7 +91,7 @@ public class PlayerController : NetworkBehaviour
             ShowLaser(hit, position);
             if (Input.GetKeyDown(KeyCode.B))
             {
-                PlaceMarker(hit);
+                CmdPlaceMarker(hit.point, hit.normal);
             }
         }
     }
@@ -104,12 +104,15 @@ public class PlayerController : NetworkBehaviour
         laser.transform.localScale = new Vector3(laser.transform.localScale.x, laser.transform.localScale.y, hit.distance); // Scale laser so it fits exactly between the controller & the hit point
     }
 
-    private void PlaceMarker(RaycastHit hit)
+    [Command]
+    private void CmdPlaceMarker(Vector3 point, Vector3 normal)
     {
         marker = Instantiate(markerPrefab);
-        marker.transform.position = hit.point + hit.normal * markerOffset;
-        marker.transform.LookAt(hit.point, hit.normal);
+        marker.transform.position = point + normal * markerOffset;
+        marker.transform.LookAt(point, normal);
         marker.transform.Rotate(-90, 0, 0);
+
+        NetworkServer.Spawn(marker);
     }
 
     private void HandleMovement()
