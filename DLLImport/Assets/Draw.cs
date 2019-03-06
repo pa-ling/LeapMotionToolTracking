@@ -10,12 +10,11 @@ public class Draw : MonoBehaviour {
 
     private bool drawing = false;
     private bool sentStop = true;
-    private bool particleActive = false;
 
 	// Use this for initialization
 	void Start () {
         sc = transform.root.gameObject.GetComponent<SketchingController>();
-        ps = GetComponent<ParticleSystem>();
+        ps = transform.Find("Paint").gameObject.GetComponent<ParticleSystem>();
     }
 	
 	// Update is called once per frame

@@ -12,6 +12,10 @@ public class NetworkCamera : NetworkBehaviour {
             cam.GetComponent<Camera>().enabled = false;
             cam.GetComponent<LeapToolTracking>().enabled = false;
             cam.GetComponent<LeapServiceProvider>().enabled = false;
+
+            GameObject bristles = transform.Find("Body/Tool Tracking/Brush/Bristles").gameObject;
+            bristles.GetComponent<Pointer>().enabled = false;
+            bristles.GetComponent<Draw>().enabled = false;
             return;
         }
     }

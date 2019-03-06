@@ -41,6 +41,7 @@ GameObject:
   - component: {fileID: 135998184183569210}
   - component: {fileID: 23226286725722376}
   - component: {fileID: 114875230648142098}
+  - component: {fileID: 114383378230184270}
   m_Layer: 0
   m_Name: Bristles
   m_TagString: Untagged
@@ -176,7 +177,6 @@ GameObject:
   - component: {fileID: 4322192473368600}
   - component: {fileID: 198990952497768394}
   - component: {fileID: 199684850858289884}
-  - component: {fileID: 114000483476909596}
   m_Layer: 0
   m_Name: Paint
   m_TagString: Untagged
@@ -831,17 +831,6 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
   m_Emitting: 1
---- !u!114 &114000483476909596
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1716698592652552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 361cf89c4f99a4e4bb7a0845f36c00cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114082577656425120
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -891,6 +880,17 @@ MonoBehaviour:
   tool: {fileID: 1702437124268394}
   filterData: 1
   debug: 1
+--- !u!114 &114383378230184270
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1045651691944748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 361cf89c4f99a4e4bb7a0845f36c00cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114480255488949012
 MonoBehaviour:
   m_ObjectHideFlags: 1
