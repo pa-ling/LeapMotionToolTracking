@@ -89,8 +89,8 @@ public class LeapToolTracking : LeapImageRetriever
             leftMarkerLocations[2] = tempX;
             leftMarkerLocations[3] = tempY;
         }
-        Debug.Log(System.DateTime.Now + ": RawMarkerL: (" + leftMarkerLocations[0] + "; " + leftMarkerLocations[1] + "); (" + leftMarkerLocations[2] + "; " + leftMarkerLocations[3] + ")");
-        Debug.Log(System.DateTime.Now + ": RawMarkerR: (" + rightMarkerLocations[0] + "; " + rightMarkerLocations[1] + "); (" + rightMarkerLocations[2] + "; " + rightMarkerLocations[3] + ")");
+        //Debug.Log(System.DateTime.Now + ": RawMarkerL: (" + leftMarkerLocations[0] + "; " + leftMarkerLocations[1] + "); (" + leftMarkerLocations[2] + "; " + leftMarkerLocations[3] + ")");
+        //Debug.Log(System.DateTime.Now + ": RawMarkerR: (" + rightMarkerLocations[0] + "; " + rightMarkerLocations[1] + "); (" + rightMarkerLocations[2] + "; " + rightMarkerLocations[3] + ")");
 
         // Calculate marker position in 3D Space
         Vector3 marker0Pos = GetMarkerPosition(leftMarkerLocations[0], rightMarkerLocations[0], leftMarkerLocations[1], 0);
