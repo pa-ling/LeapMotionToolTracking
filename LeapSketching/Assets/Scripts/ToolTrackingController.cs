@@ -10,9 +10,9 @@ public class ToolTrackingController : LeapImageRetriever
     public bool filterData = true;
     public bool debug = true;
 
-    private const int TEX_WIDTH = 400;
-    private const int TEX_HEIGHT = 400;
-    private const int ROW_OFFSET = 100;
+    private const int TEX_WIDTH = 500;
+    private const int TEX_HEIGHT = 500;
+    private const int ROW_OFFSET = 130;
     private const int COL_OFFSET = 0;
     private const int WIDTH_WITH_OFFSET = TEX_WIDTH - 2 * COL_OFFSET;
     private const int HEIGHT_WITH_OFFSET = TEX_HEIGHT - 2 * ROW_OFFSET;
@@ -24,8 +24,8 @@ public class ToolTrackingController : LeapImageRetriever
     private const float DISTANCE_OF_CAMERAS = 4.0f;
     private const float CAMERA_ANGLE = 151.93f;
 
-    private const float LEVEL_ACTUALITY_MODIFIER = 0.25f;
-    private const float TREND_ACTUALITY_MODIFIER = 0.25f;
+    private const float LEVEL_ACTUALITY_MODIFIER = 0.20f;
+    private const float TREND_ACTUALITY_MODIFIER = 0.20f;
 
     private Vector3[] previousLevel;
     private Vector3[] previousTrend;
@@ -130,7 +130,7 @@ public class ToolTrackingController : LeapImageRetriever
                 }
                 else
                 {
-                    undistortedImg[dindex] = 0;
+                    undistortedImg[dindex] = 100;
                 }
             }
         }

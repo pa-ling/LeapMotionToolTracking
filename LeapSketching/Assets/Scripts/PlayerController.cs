@@ -227,7 +227,6 @@ public class PlayerController : NetworkBehaviour
             laser.transform.position = Vector3.Lerp(position, hit.point, .5f); // Move laser to the middle between the controller and the position the raycast hit
             laser.transform.LookAt(hit.point); // Rotate laser facing the hit point
             laser.transform.localScale = new Vector3(laser.transform.localScale.x, laser.transform.localScale.y, hit.distance); // Scale laser so it fits exactly between the controller & the hit point
-
         }
     }
 
