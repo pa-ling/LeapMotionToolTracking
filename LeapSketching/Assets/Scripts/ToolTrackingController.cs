@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using Leap.Unity;
 
-public class LeapToolTracking : LeapImageRetriever
+public class ToolTrackingController : LeapImageRetriever
 {
     [DllImport("LeapTT", EntryPoint = "Init")]
     public static extern void Init(bool debug);

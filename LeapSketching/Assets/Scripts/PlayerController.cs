@@ -41,7 +41,7 @@ public class PlayerController : NetworkBehaviour
         {
             GameObject cam = transform.Find("Head/Visor/Camera").gameObject;
             cam.GetComponent<Camera>().enabled = false;
-            cam.GetComponent<LeapToolTracking>().enabled = false;
+            cam.GetComponent<ToolTrackingController>().enabled = false;
             cam.GetComponent<LeapServiceProvider>().enabled = false;
 
             OnPlayerColorChange(playerColor);
