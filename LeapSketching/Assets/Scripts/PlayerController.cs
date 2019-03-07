@@ -58,8 +58,8 @@ public class PlayerController : NetworkBehaviour
     private void Update()
     {
         // All Clients and the Server execute this
-        HandleParticles();
-        HandleLaser(paint.transform.position, paint.transform.up);
+        ShowParticles();
+        ShowLaser(paint.transform.position, paint.transform.up);
 
         if (!isLocalPlayer)
         {
@@ -69,7 +69,7 @@ public class PlayerController : NetworkBehaviour
         // Only the local client executes this.
         HandleMovement();
         HandleDrawing(paint.transform.position);
-        HandleMarker(paint.transform.position, paint.transform.up);
+        HandlePointer(paint.transform.position, paint.transform.up);
     }
 
     [Command]
@@ -82,12 +82,14 @@ public class PlayerController : NetworkBehaviour
     private void CmdSwitchDrawing()
     {
         drawing = !drawing;
+        isLaserOn = false;
     }
 
     [Command]
     private void CmdSwitchLaser()
     {
         isLaserOn = !isLaserOn;
+        drawing = false;
     }
 
     [Command]
@@ -125,7 +127,7 @@ public class PlayerController : NetworkBehaviour
         laser.SetActive(laserActive);
     }
 
-    private void HandleParticles()
+    private void ShowParticles()
     {
         ParticleSystem ps = paint.GetComponent<ParticleSystem>();
 
@@ -206,16 +208,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private void HandleLaser(Vector3 position, Vector3 direction)
-    {
-        RaycastHit hit;
-        if (isLaserOn && Physics.Raycast(position, direction, out hit))
-        {
-            ShowLaser(hit, position);
-        }
-    }
-
-    private void HandleMarker(Vector3 position, Vector3 direction)
+    private void HandlePointer(Vector3 position, Vector3 direction)
     {
         if (Input.GetKeyDown(KeyCode.PageDown))
         {
@@ -229,11 +222,16 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private void ShowLaser(RaycastHit hit, Vector3 origin)
+    private void ShowLaser(Vector3 position, Vector3 direction)
     {
-        laser.transform.position = Vector3.Lerp(origin, hit.point, .5f); // Move laser to the middle between the controller and the position the raycast hit
-        laser.transform.LookAt(hit.point); // Rotate laser facing the hit point
-        laser.transform.localScale = new Vector3(laser.transform.localScale.x, laser.transform.localScale.y, hit.distance); // Scale laser so it fits exactly between the controller & the hit point
+        RaycastHit hit;
+        if (isLaserOn && Physics.Raycast(position, direction, out hit))
+        {
+            laser.transform.position = Vector3.Lerp(position, hit.point, .5f); // Move laser to the middle between the controller and the position the raycast hit
+            laser.transform.LookAt(hit.point); // Rotate laser facing the hit point
+            laser.transform.localScale = new Vector3(laser.transform.localScale.x, laser.transform.localScale.y, hit.distance); // Scale laser so it fits exactly between the controller & the hit point
+
+        }
     }
 
 }
