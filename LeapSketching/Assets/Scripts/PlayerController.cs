@@ -111,7 +111,7 @@ public class PlayerController : NetworkBehaviour
         marker.transform.position = point + normal * markerOffset;
         marker.transform.LookAt(point, normal);
         marker.transform.Rotate(-90, 0, 0);
-        marker.GetComponentInChildren<MeshRenderer>().material.color = playerColor; // marker color
+        marker.GetComponentsInChildren<MeshRenderer>()[0].material.color = playerColor; // marker color
 
         NetworkServer.Spawn(marker);
     }

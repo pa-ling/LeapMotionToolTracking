@@ -990,7 +990,7 @@ MonoBehaviour:
   maxDistanceToZero: 20
   markerPrefab: {fileID: 1738316654536160, guid: da9bcd9fda92df24aae739ff429c56fb,
     type: 2}
-  markerOffset: 2
+  markerOffset: 1
 --- !u!114 &114752089178549880
 MonoBehaviour:
   m_ObjectHideFlags: 1

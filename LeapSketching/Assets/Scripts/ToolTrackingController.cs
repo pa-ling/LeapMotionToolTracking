@@ -44,6 +44,12 @@ public class ToolTrackingController : LeapImageRetriever
 
         marker0.SetActive(debug);
         marker1.SetActive(debug);
+
+        if (debug)
+        {
+            marker0.GetComponent<MeshRenderer>().material.color = Color.green;
+            marker1.GetComponent<MeshRenderer>().material.color = Color.blue;
+        }
     }
 
     private void OnPreRender()
