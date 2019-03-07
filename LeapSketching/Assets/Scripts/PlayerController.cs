@@ -37,7 +37,6 @@ public class PlayerController : NetworkBehaviour
 
     public void BrushDisabled()
     {
-        Debug.Log("disbale");
         if (drawing)
         {
             CmdSwitchDrawing();
