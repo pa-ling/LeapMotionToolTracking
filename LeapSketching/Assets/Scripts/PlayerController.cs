@@ -29,7 +29,7 @@ public class PlayerController : NetworkBehaviour
     private Color playerColor = Color.black;
 
     // Sketching
-    [SyncVar]
+    [SyncVar(hook = "OnDrawingChange")]
     private bool drawing = false;
     private bool sentStop = true;
     private SketchingController sc;
@@ -58,7 +58,6 @@ public class PlayerController : NetworkBehaviour
     private void Update()
     {
         // All Clients and the Server execute this
-        ShowParticles();
         ShowLaser(paint.transform.position, paint.transform.up);
 
         if (!isLocalPlayer)
@@ -127,20 +126,18 @@ public class PlayerController : NetworkBehaviour
         laser.SetActive(laserActive);
     }
 
-    private void ShowParticles()
+    private void OnDrawingChange(bool newDrawing)
     {
+        drawing = newDrawing;
         ParticleSystem ps = paint.GetComponent<ParticleSystem>();
 
-        if (drawing && ps.isStopped)
+        if (newDrawing)
         {
             ps.Play();
-        }
-
-        if (!drawing && ps.isPlaying)
+        } else
         {
             ps.Stop();
         }
-
     }
 
     private void HandleMovement()
