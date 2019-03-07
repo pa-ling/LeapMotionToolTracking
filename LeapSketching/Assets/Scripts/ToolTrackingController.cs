@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using Leap.Unity;
 
 public class ToolTrackingController : LeapImageRetriever
 {
-    [DllImport("LeapTT", EntryPoint = "Init")]
-    public static extern void Init(bool debug);
-
-    [DllImport("LeapTT", EntryPoint = "GetLeapImages")]
-    public static extern void GetLeapImages(byte[] raw, byte[] img0, byte[] img1, int width, int height);
-
-    [DllImport("LeapTT", EntryPoint = "CropImage")]
-    public static extern void CropImage(byte[] imgData, byte[] croppedImgData, int width, int height, int startX, int startY, int cropWidth, int cropHeight);
-
-    [DllImport("LeapTT", EntryPoint = "ConvertByteToColor")]
-    public static extern void ConvertByteToColor(byte[] raw, Color32[] img0, int width, int height);
-
-    [DllImport("LeapTT", EntryPoint = "GetMarkerLocations")]
-    public static extern void GetMarkerLocations(byte[] imgData, float[] markerLocations, int width, int height, int camera);
+    public GameObject marker0;
+    public GameObject marker1;
+    public GameObject tool;
+    public bool filterData = true;
+    public bool debug = true;
 
     private const int TEX_WIDTH = 400;
     private const int TEX_HEIGHT = 400;
@@ -40,15 +30,9 @@ public class ToolTrackingController : LeapImageRetriever
     private Vector3[] previousLevel;
     private Vector3[] previousTrend;
 
-    public GameObject marker0;
-    public GameObject marker1;
-    public GameObject tool;
-    public bool filterData = true;
-    public bool debug = true;
-
     private void Start()
     {
-        Init(debug);
+        LeapToolTracking.Init(debug);
         previousLevel = new Vector3[2];
         previousLevel[0] = new Vector3(0, 5, 0);
         previousLevel[1] = previousLevel[0];
@@ -72,7 +56,7 @@ public class ToolTrackingController : LeapImageRetriever
         int imageSize = _currentImage.Width * _currentImage.Height;
         byte[] raw = _currentImage.Data(Leap.Image.CameraType.LEFT);
         byte[] leftImgData = new byte[imageSize], rightImgData = new byte[imageSize];
-        GetLeapImages(raw, leftImgData, rightImgData, _currentImage.Width, _currentImage.Height);
+        LeapToolTracking.GetLeapImages(raw, leftImgData, rightImgData, _currentImage.Width, _currentImage.Height);
 
         // Get location of the markers in both pictures
         float[] leftMarkerLocations = ProcessImage(leftImgData, Leap.Image.CameraType.LEFT);
@@ -105,7 +89,7 @@ public class ToolTrackingController : LeapImageRetriever
     {
         byte[] undistortedImg = UndistortImage(imgData, type);
         byte[] croppedUndistortedImg = new byte[WIDTH_WITH_OFFSET * HEIGHT_WITH_OFFSET];
-        CropImage(
+        LeapToolTracking.CropImage(
             undistortedImg,
             croppedUndistortedImg,
             TEX_WIDTH, TEX_HEIGHT,
@@ -114,7 +98,7 @@ public class ToolTrackingController : LeapImageRetriever
             WIDTH_WITH_OFFSET,
             HEIGHT_WITH_OFFSET);
         float[] markerLocations = new float[4];
-        GetMarkerLocations(croppedUndistortedImg, markerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, (int) type);
+        LeapToolTracking.GetMarkerLocations(croppedUndistortedImg, markerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, (int) type);
 
         return markerLocations;
     }
@@ -194,4 +178,5 @@ public class ToolTrackingController : LeapImageRetriever
             !(float.IsNaN(vector.x) || float.IsNaN(vector.y) || float.IsNaN(vector.z) ||
             float.IsInfinity(vector.x) || float.IsInfinity(vector.y) || float.IsInfinity(vector.z));
     }
+
 }
