@@ -19,8 +19,9 @@ public class PlayerController : NetworkBehaviour
     public GameObject markerPrefab;
     public int markerOffset = 2;
 
-    private GameObject laser;
+    [SyncVar(hook = "OnLaserActiveChange")]
     private bool isLaserOn = false;
+    private GameObject laser;
     private GameObject marker;
 
     // Color
@@ -38,6 +39,7 @@ public class PlayerController : NetworkBehaviour
     {
         paint = transform.Find("Body/Tool Tracking/Brush/Bristles/Paint").gameObject;
         sc = GetComponent<SketchingController>();
+        laser = transform.Find("Body/Tool Tracking/Brush/Laser").gameObject;
 
         if (!isLocalPlayer)
         {
@@ -50,8 +52,6 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        laser = transform.Find("Body/Tool Tracking/Brush/Laser").gameObject;
-
         CmdAssignColor();
     }
 
@@ -59,16 +59,17 @@ public class PlayerController : NetworkBehaviour
     {
         // All Clients and the Server execute this
         HandleParticles();
+        HandleLaser(paint.transform.position, paint.transform.up);
 
         if (!isLocalPlayer)
         {
             return;
         }
-        
+
         // Only the local client executes this.
         HandleMovement();
         HandleDrawing(paint.transform.position);
-        HandlePointer(paint.transform.position, paint.transform.up);
+        HandleMarker(paint.transform.position, paint.transform.up);
     }
 
     [Command]
@@ -81,6 +82,12 @@ public class PlayerController : NetworkBehaviour
     private void CmdSwitchDrawing()
     {
         drawing = !drawing;
+    }
+
+    [Command]
+    private void CmdSwitchLaser()
+    {
+        isLaserOn = !isLaserOn;
     }
 
     [Command]
@@ -101,12 +108,21 @@ public class PlayerController : NetworkBehaviour
     /// <param name="color">The color of the player</param>
     private void OnPlayerColorChange(Color color)
     {
-        transform.Find("Head").GetComponent<MeshRenderer>().material.color = color; // player color
-        transform.Find("Body/Tool Tracking/Brush/Bristles").GetComponent<MeshRenderer>().material.color = color; // bristles color
-        transform.Find("Body/Tool Tracking/Brush/Trail").GetComponent<TrailRenderer>().material.color = color; // trail color
-        sc.strokeColor = color; // drawing color
+        playerColor = color;
+        transform.Find("Head").GetComponent<MeshRenderer>().material.color = playerColor; // player color
+        transform.Find("Body/Tool Tracking/Brush/Bristles").GetComponent<MeshRenderer>().material.color = playerColor; // bristles color
+        transform.Find("Body/Tool Tracking/Brush/Trail").GetComponent<TrailRenderer>().material.color = playerColor; // trail color
+        sc.strokeColor = playerColor; // drawing color
+        laser.GetComponent<MeshRenderer>().material.color = playerColor; // laser color
+        // particle color
         ParticleSystem.MainModule settings = paint.GetComponent<ParticleSystem>().main;
-        settings.startColor = new ParticleSystem.MinMaxGradient(color); // particle color
+        settings.startColor = new ParticleSystem.MinMaxGradient(playerColor);
+    }
+
+    private void OnLaserActiveChange(bool laserActive)
+    {
+        isLaserOn = laserActive;
+        laser.SetActive(laserActive);
     }
 
     private void HandleParticles()
@@ -190,29 +206,31 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private void HandlePointer(Vector3 position, Vector3 direction)
+    private void HandleLaser(Vector3 position, Vector3 direction)
     {
         RaycastHit hit;
-        if (Input.GetKeyDown(KeyCode.PageDown))
-        {
-            isLaserOn = !isLaserOn;
-            laser.SetActive(isLaserOn);
-        }
-
         if (isLaserOn && Physics.Raycast(position, direction, out hit))
         {
             ShowLaser(hit, position);
-            if (Input.GetKeyDown(KeyCode.B))
-            {
-                CmdPlaceMarker(hit.point, hit.normal);
-            }
+        }
+    }
+
+    private void HandleMarker(Vector3 position, Vector3 direction)
+    {
+        if (Input.GetKeyDown(KeyCode.PageDown))
+        {
+            CmdSwitchLaser();
+        }
+
+        RaycastHit hit;
+        if (isLaserOn && Input.GetKeyDown(KeyCode.B) && Physics.Raycast(position, direction, out hit))
+        {
+            CmdPlaceMarker(hit.point, hit.normal);
         }
     }
 
     private void ShowLaser(RaycastHit hit, Vector3 origin)
     {
-        laser.SetActive(true); //Show the laser
-        laser.GetComponent<MeshRenderer>().material.color = playerColor; // laser color
         laser.transform.position = Vector3.Lerp(origin, hit.point, .5f); // Move laser to the middle between the controller and the position the raycast hit
         laser.transform.LookAt(hit.point); // Rotate laser facing the hit point
         laser.transform.localScale = new Vector3(laser.transform.localScale.x, laser.transform.localScale.y, hit.distance); // Scale laser so it fits exactly between the controller & the hit point
