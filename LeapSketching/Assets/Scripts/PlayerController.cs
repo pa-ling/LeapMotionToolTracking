@@ -16,7 +16,6 @@ public class PlayerController : NetworkBehaviour
     private float verticalRotation = 0;
 
     // Pointing
-    public GameObject laserPrefab;
     public GameObject markerPrefab;
     public int markerOffset = 2;
 
@@ -51,8 +50,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        laser = Instantiate(laserPrefab);
-        laser.SetActive(false);
+        laser = transform.Find("Body/Tool Tracking/Brush/Laser").gameObject;
 
         CmdAssignColor();
     }
