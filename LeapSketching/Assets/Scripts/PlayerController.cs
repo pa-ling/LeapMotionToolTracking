@@ -35,6 +35,20 @@ public class PlayerController : NetworkBehaviour
     private SketchingController sc;
     private GameObject paint;
 
+    public void BrushDisabled()
+    {
+        Debug.Log("disbale");
+        if (drawing)
+        {
+            CmdSwitchDrawing();
+        }
+
+        if (isLaserOn)
+        {
+            CmdSwitchLaser();
+        }
+    }
+
     private void Start()
     {
         paint = transform.Find("Body/Tool Tracking/Brush/Bristles/Paint").gameObject;
@@ -229,5 +243,4 @@ public class PlayerController : NetworkBehaviour
             laser.transform.localScale = new Vector3(laser.transform.localScale.x, laser.transform.localScale.y, hit.distance); // Scale laser so it fits exactly between the controller & the hit point
         }
     }
-
 }

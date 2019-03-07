@@ -29,6 +29,7 @@ public class ToolTrackingController : LeapImageRetriever
 
     private Vector3[] previousLevel;
     private Vector3[] previousTrend;
+    private bool toolActive = true;
 
     private void Start()
     {
@@ -76,6 +77,23 @@ public class ToolTrackingController : LeapImageRetriever
         //Debug.Log(System.DateTime.Now + ": RawMarkerL: (" + leftMarkerLocations[0] + "; " + leftMarkerLocations[1] + "); (" + leftMarkerLocations[2] + "; " + leftMarkerLocations[3] + ")");
         //Debug.Log(System.DateTime.Now + ": RawMarkerR: (" + rightMarkerLocations[0] + "; " + rightMarkerLocations[1] + "); (" + rightMarkerLocations[2] + "; " + rightMarkerLocations[3] + ")");
 
+        if (ArrayIs(1000000, leftMarkerLocations) && ArrayIs(1000000, leftMarkerLocations))
+        {
+            toolActive = false;
+            marker0.SetActive(toolActive);
+            marker1.SetActive(toolActive);
+            tool.SetActive(toolActive);
+            return;
+        }
+
+        if (!toolActive)
+        {
+            toolActive = true;
+            marker0.SetActive(toolActive);
+            marker1.SetActive(toolActive);
+            tool.SetActive(toolActive);
+        }
+
         // Calculate marker position in 3D Space
         Vector3 marker0Pos = GetMarkerPosition(leftMarkerLocations[0], rightMarkerLocations[0], leftMarkerLocations[1], 0);
         Vector3 marker1Pos = GetMarkerPosition(leftMarkerLocations[2], rightMarkerLocations[2], leftMarkerLocations[3], 1);
@@ -97,7 +115,8 @@ public class ToolTrackingController : LeapImageRetriever
             ROW_OFFSET,
             WIDTH_WITH_OFFSET,
             HEIGHT_WITH_OFFSET);
-        float[] markerLocations = new float[4];
+
+        float[] markerLocations = new float[] { 1000000, 1000000, 1000000, 1000000 };
         LeapToolTracking.GetMarkerLocations(croppedUndistortedImg, markerLocations, WIDTH_WITH_OFFSET, HEIGHT_WITH_OFFSET, (int) type);
 
         return markerLocations;
@@ -179,4 +198,15 @@ public class ToolTrackingController : LeapImageRetriever
             float.IsInfinity(vector.x) || float.IsInfinity(vector.y) || float.IsInfinity(vector.z));
     }
 
+    private bool ArrayIs(float number, float[] array)
+    {
+        foreach (float element in array)
+        {
+            if (element != number)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
