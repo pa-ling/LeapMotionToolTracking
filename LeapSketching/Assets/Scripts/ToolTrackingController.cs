@@ -30,6 +30,12 @@ public class ToolTrackingController : LeapImageRetriever
     private Vector3[] previousLevel;
     private Vector3[] previousTrend;
     private bool toolActive = true;
+    private bool swapMarkers = false;
+
+    public void SwitchMarkers()
+    {
+        swapMarkers = !swapMarkers;
+    }
 
     private void Start()
     {
@@ -103,6 +109,14 @@ public class ToolTrackingController : LeapImageRetriever
         // Calculate marker position in 3D Space
         Vector3 marker0Pos = GetMarkerPosition(leftMarkerLocations[0], rightMarkerLocations[0], leftMarkerLocations[1], 0);
         Vector3 marker1Pos = GetMarkerPosition(leftMarkerLocations[2], rightMarkerLocations[2], leftMarkerLocations[3], 1);
+
+        if (swapMarkers)
+        {
+            Vector3 temp = marker0Pos;
+            marker0Pos = marker1Pos;
+            marker1Pos = temp;
+        }
+
         marker0.transform.localPosition = marker0Pos;
         marker1.transform.localPosition = marker1Pos;
         tool.transform.localPosition = marker0Pos;

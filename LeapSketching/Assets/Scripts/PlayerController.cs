@@ -222,6 +222,15 @@ public class PlayerController : NetworkBehaviour
             sc.DeleteStrokes();
         }
 
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (drawing)
+            {
+                CmdSwitchDrawing();
+            }
+            transform.Find("Head/Visor/Camera").GetComponent<ToolTrackingController>().SwitchMarkers();
+        }
+
         if (drawing)
         {
             sc.Draw();
