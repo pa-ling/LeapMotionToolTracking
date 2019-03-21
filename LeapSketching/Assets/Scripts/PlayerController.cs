@@ -142,14 +142,18 @@ public class PlayerController : NetworkBehaviour
     private void OnDrawingChange(bool newDrawing)
     {
         drawing = newDrawing;
-        ParticleSystem ps = paint.GetComponent<ParticleSystem>();
 
-        if (newDrawing)
+        if (!isLocalPlayer)
         {
-            ps.Play();
-        } else
-        {
-            ps.Stop();
+            ParticleSystem ps = paint.GetComponent<ParticleSystem>();
+            if (newDrawing)
+            {
+                ps.Play();
+            }
+            else
+            {
+                ps.Stop();
+            }
         }
     }
 
