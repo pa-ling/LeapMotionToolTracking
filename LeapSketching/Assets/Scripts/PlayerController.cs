@@ -63,6 +63,9 @@ public class PlayerController : NetworkBehaviour
 
             OnPlayerColorChange(playerColor);
             return;
+        } else
+        {
+            transform.Find("Body/Tool Tracking/Brush/Trail").gameObject.SetActive(false);
         }
 
         CmdAssignColor();
