@@ -190,14 +190,14 @@ public class PlayerController : NetworkBehaviour
         }
 
         //Rotate Top
-        if (Input.GetKey(KeyCode.Space) && MAX_VERTICAL_ROTATION > verticalRotation + rotatingRange)
+        if ((Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.RightControl)) && MAX_VERTICAL_ROTATION > verticalRotation + rotatingRange)
         {
             transform.RotateAround(centralPoint, transform.right, rotatingRange);
             verticalRotation += rotatingRange;
         }
 
         //Rotate Down
-        if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && -MAX_VERTICAL_ROTATION < verticalRotation - rotatingRange)
+        if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.Keypad0)) && -MAX_VERTICAL_ROTATION < verticalRotation - rotatingRange)
         {
             transform.RotateAround(centralPoint, -transform.right, rotatingRange);
             verticalRotation -= rotatingRange;
