@@ -73,7 +73,6 @@ public class PlayerController : NetworkBehaviour
 
     private void Update()
     {
-        Debug.Log(sc.strokes.Count);
         // All Clients and the Server execute this
         ShowLaser(paint.transform.position, paint.transform.up);
 
@@ -221,7 +220,6 @@ public class PlayerController : NetworkBehaviour
                 CmdSwitchDrawing();
             }
             sc.DeleteStrokes();
-            Debug.Log("delete strokes");
         }
 
         if (drawing)
