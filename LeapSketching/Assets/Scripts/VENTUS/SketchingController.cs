@@ -27,7 +27,7 @@ namespace VENTUS
 				private Vector3 lastVirtualBrushPosition;
 
 				#region StartUp
-				private void Start()
+				private void Awake()
 				{
 					strokes = new List<Stroke>();
 					currentStroke = null;
@@ -52,8 +52,6 @@ namespace VENTUS
 							foreach (Vector3 position in positions)
 								writer.Write(position);
 						}
-
-						return true;
 					}
 					return true;
 				}
@@ -143,10 +141,33 @@ namespace VENTUS
 				{
 					currentStroke = null;
 				}
-				#endregion
+                #endregion
 
-				#region GenerateStroke
-				private Stroke GenerateNewStroke()
+                #region DeleteStrokes
+                public void DeleteStrokes()
+                {
+                    CmdDeleteStrokes();
+                }
+
+                [Command]
+                public void CmdDeleteStrokes()
+                {
+                    RpcDeleteStrokes();
+                }
+
+                [ClientRpc]
+                public void RpcDeleteStrokes()
+                {
+                    for (int i = 0; i < strokes.Count; i++)
+                    {
+                        Destroy(strokes[i].gameObject);
+                    }
+                    strokes.Clear();
+                }
+                #endregion
+
+                #region GenerateStroke
+                private Stroke GenerateNewStroke()
 				{
 					GameObject newStroke = Instantiate(strokePrefab);
 
