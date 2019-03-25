@@ -56,10 +56,10 @@ public class PlayerController : NetworkBehaviour
 
         if (!isLocalPlayer)
         {
-            GameObject cam = transform.Find("Head/Visor/Camera").gameObject;
+            GameObject cam = transform.Find("Head/Camera").gameObject;
             cam.GetComponent<Camera>().enabled = false;
             cam.GetComponent<ToolTrackingController>().SetStopTracking(false);
-            cam.GetComponent<LeapServiceProvider>().enabled = false;
+            cam.GetComponentInChildren<LeapServiceProvider>().enabled = false;
 
             OnPlayerColorChange(playerColor);
             return;
@@ -228,7 +228,7 @@ public class PlayerController : NetworkBehaviour
             {
                 CmdSwitchDrawing();
             }
-            transform.Find("Head/Visor/Camera").GetComponent<ToolTrackingController>().SwitchMarkers();
+            transform.Find("Head/Camera").GetComponent<ToolTrackingController>().SwitchMarkers();
         }
 
         if (drawing)

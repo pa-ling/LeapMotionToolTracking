@@ -68,10 +68,8 @@ public class ToolTrackingController : LeapImageRetriever
     {
         if (_currentImage == null || stopTracking)
         {
-            Debug.Log("image is null");
             return;
         }
-        Debug.Log("image is not null");
 
         // Separate left and right image
         int imageSize = _currentImage.Width * _currentImage.Height;
@@ -194,7 +192,7 @@ public class ToolTrackingController : LeapImageRetriever
         float y0 = GetDepth(xL, xR) / 2;
         float x0 = (-xL + (WIDTH_WITH_OFFSET / 2)) * y0 / 100;
         float z0 = (-y + (HEIGHT_WITH_OFFSET - 100)) * y0 / 100;
-        Vector3 markerPos = new Vector3(x0, y0, z0) / 10;
+        Vector3 markerPos = new Vector3(x0, y0, z0) / 20;
         //Debug.Log(System.DateTime.Now + ": Marker" + marker + ":" + markerPos);
         if (filterData)
         {
