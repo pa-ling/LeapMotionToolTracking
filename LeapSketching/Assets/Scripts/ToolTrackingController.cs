@@ -31,10 +31,16 @@ public class ToolTrackingController : LeapImageRetriever
     private Vector3[] previousTrend;
     private bool toolActive = true;
     private bool swapMarkers = false;
+    private bool stopTracking = false;
 
     public void SwitchMarkers()
     {
         swapMarkers = !swapMarkers;
+    }
+
+    public void SetStopTracking(bool stopTracking)
+    {
+        this.stopTracking = stopTracking;
     }
 
     private void Start()
@@ -60,10 +66,12 @@ public class ToolTrackingController : LeapImageRetriever
 
     private void OnPreRender()
     {
-        if (_currentImage == null)
+        if (_currentImage == null || stopTracking)
         {
+            Debug.Log("image is null");
             return;
         }
+        Debug.Log("image is not null");
 
         // Separate left and right image
         int imageSize = _currentImage.Width * _currentImage.Height;
