@@ -189,6 +189,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4959629256552008}
   - component: {fileID: 114964137523841924}
+  - component: {fileID: 114847237916558072}
   m_Layer: 0
   m_Name: Brush
   m_TagString: Untagged
@@ -1247,6 +1248,17 @@ MonoBehaviour:
   strokeWidth: 0.05
   samplingRate: 0.01
   strokes: []
+--- !u!114 &114847237916558072
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1702437124268394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c36b9193ac637b8489f8611c16a3ffb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114964137523841924
 MonoBehaviour:
   m_ObjectHideFlags: 1
