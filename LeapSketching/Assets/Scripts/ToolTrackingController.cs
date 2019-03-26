@@ -43,6 +43,11 @@ public class ToolTrackingController : LeapImageRetriever
         this.stopTracking = stopTracking;
     }
 
+    public bool ProviderConnected()
+    {
+        return _provider.IsConnected();
+    }
+
     private void Start()
     {
         LeapToolTracking.Init(debug);
@@ -98,8 +103,6 @@ public class ToolTrackingController : LeapImageRetriever
         if (ArrayIs(1000000, leftMarkerLocations) && ArrayIs(1000000, leftMarkerLocations))
         {
             toolActive = false;
-            marker0.SetActive(toolActive);
-            marker1.SetActive(toolActive);
             tool.SetActive(toolActive);
             return;
         }
@@ -107,8 +110,6 @@ public class ToolTrackingController : LeapImageRetriever
         if (!toolActive)
         {
             toolActive = true;
-            marker0.SetActive(toolActive);
-            marker1.SetActive(toolActive);
             tool.SetActive(toolActive);
         }
 

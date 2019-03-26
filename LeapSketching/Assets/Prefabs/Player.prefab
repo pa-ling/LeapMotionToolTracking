@@ -1083,7 +1083,7 @@ MonoBehaviour:
   marker1: {fileID: 1150307176251720}
   tool: {fileID: 1702437124268394}
   filterData: 1
-  debug: 1
+  debug: 0
 --- !u!114 &114419812037334616
 MonoBehaviour:
   m_ObjectHideFlags: 1

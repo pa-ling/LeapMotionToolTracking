@@ -60,14 +60,13 @@ public class PlayerController : NetworkBehaviour
             cam.GetComponent<Camera>().enabled = false;
             cam.GetComponent<ToolTrackingController>().SetStopTracking(false);
             cam.GetComponentInChildren<LeapServiceProvider>().enabled = false;
+            transform.Find("Body/Tool Tracking/Brush").gameObject.GetComponent<MouseMovement>().enabled = false;
 
             OnPlayerColorChange(playerColor);
             return;
-        } else
-        {
-            transform.Find("Body/Tool Tracking/Brush/Trail").gameObject.SetActive(false);
         }
 
+        transform.Find("Body/Tool Tracking/Brush/Trail").gameObject.SetActive(false);
         CmdAssignColor();
     }
 
@@ -79,6 +78,15 @@ public class PlayerController : NetworkBehaviour
         if (!isLocalPlayer)
         {
             return;
+        }
+
+        if (transform.Find("Head/Camera").gameObject.GetComponent<ToolTrackingController>().ProviderConnected())
+        {
+            transform.Find("Body/Tool Tracking/Brush").gameObject.GetComponent<MouseMovement>().enabled = false;
+        }
+        else
+        {
+            transform.Find("Body/Tool Tracking/Brush").gameObject.GetComponent<MouseMovement>().enabled = true;
         }
 
         // Only the local client executes this.
@@ -208,7 +216,7 @@ public class PlayerController : NetworkBehaviour
     {
         sc.SetVirtualBrushPosition(position);
 
-        if (Input.GetKeyDown(KeyCode.PageUp))
+        if (Input.GetKeyDown(KeyCode.PageUp) || Input.GetMouseButtonDown(0) || Input.GetMouseButtonUp(0))
         {
             CmdSwitchDrawing();
         }
@@ -245,7 +253,7 @@ public class PlayerController : NetworkBehaviour
 
     private void HandlePointer(Vector3 position, Vector3 direction)
     {
-        if (Input.GetKeyDown(KeyCode.PageDown))
+        if (Input.GetKeyDown(KeyCode.PageDown) || Input.GetMouseButtonDown(1) || Input.GetMouseButtonUp(1))
         {
             CmdSwitchLaser();
         }
